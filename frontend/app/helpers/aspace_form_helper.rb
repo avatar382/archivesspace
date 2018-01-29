@@ -265,7 +265,7 @@ module AspaceFormHelper
       if !(value.is_a? String)
         value = value.to_s
       end
-      
+
 
       if opts.has_key? :controls_class
         opts[:controls_class] << " label-only"

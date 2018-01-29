@@ -61,7 +61,7 @@ class ArchivesSpaceService < Sinatra::Base
     agent_model = AgentManager.model_for(target[:type])
     #agent_model = AgentManager.model_for(victims[0][:type])
 
-    target = agent_model.get_or_die(target[:id]) 
+    target = agent_model.get_or_die(target[:id])
 
     victim = agent_model.get_or_die(victims[0][:id])
     if params[:dry_run]
@@ -197,7 +197,7 @@ class ArchivesSpaceService < Sinatra::Base
           parse_selections(v2, path, all_values)
           path.pop
         end
-        else 
+        else
           path.pop
           next
       end
@@ -205,7 +205,7 @@ class ArchivesSpaceService < Sinatra::Base
     path.pop
 
     return all_values
-  end 
+  end
 
   def merge_details(target, victim, selections)
     puts "\n\n\n\n\n\n\n"
@@ -220,12 +220,12 @@ class ArchivesSpaceService < Sinatra::Base
         end
         path_fix.push(part)
       end
-      path_fix_length = path_fix.length 
+      path_fix_length = path_fix.length
       if path_fix[0] != 'related_agents' && path_fix[0] != 'external_documents' && path_fix[0] != 'notes'
-        case path_fix_length 
-          when 1 
+        case path_fix_length
+          when 1
             target[path_fix[0]] = victim[path_fix[0]]
-          when 2 
+          when 2
             target[path_fix[0]][path_fix[1]] = victim[path_fix[0]][path_fix[1]]
           when 3
             begin
