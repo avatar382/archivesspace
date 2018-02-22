@@ -257,12 +257,6 @@ class ArchivesSpaceService < Sinatra::Base
       end
     target['title'] = target['names'][0]['sort_name']
     end
-    target = add_victim_related(target, victim)
-    target
-  end
-
-  def add_victim_related(target, victim)
-    target['related_agents'].push(*victim['related_agents'])
     target
   end
 
