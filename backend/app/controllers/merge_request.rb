@@ -150,9 +150,6 @@ class ArchivesSpaceService < Sinatra::Base
   end
 
   def parse_selections(selections, path=[], all_values={})
-    puts "\n\n\n\n\n\n\n"
-    puts selections
-    puts "\n\n\n\n\n\n\n"
     selections.each_pair do |k, v|
       path << k
       case v
@@ -168,7 +165,6 @@ class ArchivesSpaceService < Sinatra::Base
         when Array then v.each_with_index do |v2, index|
           path << index
           parse_selections(v2, path, all_values)
-          path.pop
         end
         else
           path.pop
@@ -187,6 +183,8 @@ class ArchivesSpaceService < Sinatra::Base
       path.each do |part|
         if part.length === 1
           part = part.to_i
+        elsif (part.length === 2) and (part.start_with?('1'))
+          part = part.to_i
         end
         path_fix.push(part)
       end
@@ -199,7 +197,11 @@ class ArchivesSpaceService < Sinatra::Base
             target[path_fix[0]][path_fix[1]] = victim[path_fix[0]][path_fix[1]]
           when 3
             begin
+              if target[path_fix[0]].length <= path_fix[1]
+                target[path_fix[0]].push(victim[path_fix[0]][path_fix[1]])
+              end
               target[path_fix[0]][path_fix[1]][path_fix[2]] = victim[path_fix[0]][path_fix[1]][path_fix[2]]
+
             rescue
               if target[path_fix[0]] === []
                 target[path_fix[0]].push(victim[path_fix[0]][path_fix[1]])
@@ -223,7 +225,7 @@ class ArchivesSpaceService < Sinatra::Base
       elsif path_fix[0] === 'notes'
         target['notes'].push(victim['notes'][path_fix[1]])
       end
-    
+
     target['title'] = target['names'][0]['sort_name']
     end
     if dry_run == true
