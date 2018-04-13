@@ -179,10 +179,15 @@ class AgentsController < ApplicationController
 
 
   def merge
-    handle_merge( params[:refs],
-                  JSONModel(@agent_type).uri_for(params[:id]),
+    merge_list = params[:record_uris]
+    target = merge_list[0]
+    merge_list.shift
+    victims = merge_list
+    target_type = JSONModel.parse_reference(target)[:type]
+    handle_merge( victims,
+                  target,
                   'agent',
-                  {:agent_type => @agent_type})
+                  {:agent_type => target_type})
   end
 
   def merge_selector
