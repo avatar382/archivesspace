@@ -166,6 +166,7 @@ class ArchivesSpaceService < Sinatra::Base
           path << index
           parse_selections(v2, path, all_values)
         end
+        path.pop
         else
           path.pop
           next

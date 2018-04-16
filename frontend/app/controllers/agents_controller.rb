@@ -247,12 +247,6 @@ class AgentsController < ApplicationController
 
   end
 
-  def merge_preview
-    @agent = JSONModel(@agent_type).find(params[:id], find_opts)
-
-    render :text => params[:refs]
-  end
-
 
   private
 
