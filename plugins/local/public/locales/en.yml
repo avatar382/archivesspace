@@ -1,0 +1,9 @@
+# (cvk) find the parts you need in public/config/locales/en.yml
+# and copy here
+en:
+  brand:
+    title: North Park University
+    welcome_page_title: North Park University
+    welcome_head: Welcome to North Park University
+    welcome_message: ""
+    welcome_search_label: "Find what you're looking for:"

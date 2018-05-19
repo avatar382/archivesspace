@@ -1,0 +1,58 @@
+$alert-warning-text: red;
+
+// (cvk) ArchivesSpace PUI defines styles with all these SCSS files in
+// `public/app/assets/stylesheets`. The colors of the interface are set in
+// `_variables.scss`, but there's no good way to customize these variables
+// because they are compiled and baked into the PUI's WAR file in the
+// ArchivesSpace distribution.
+//
+// The only way I found to customize the variables is to compile an overlay
+// made up of all of the SCSS files that ArchivesSpace uses.
+
+@import "foundation/_functions.scss";
+@import "archivesspace/fonts";
+@import "archivesspace/colors";  // <--- customize colors in this file
+@import "archivesspace/variables";
+@import "archivesspace/aspace"; 
+@import "archivesspace/record-type-badge";
+
+
+#header {
+  background-color: #fff;
+  > .row {
+    height: auto;
+    > div {
+      padding: 10px;
+    }
+  }
+  .logo {
+    float: none;
+    height: 110px;
+    padding-left: 40px;
+    padding-bottom: 10px;
+  }
+}
+
+.navbar-header.top-bar {
+  /* if customer wants a linear gradient in navbar */
+  // background: linear-gradient(to bottom, #ca9661, #F2F2F2) !important;
+}
+
+/* override default twitter-bootstrap colors */
+.btn-primary {
+  background-color: $button-background;
+  border-color: darken($button-background, 10%);
+  &:hover {
+    background-color: lighten($button-background, 10%);
+    border-color: darken($button-background, 10%);
+  }
+}
+
+a:hover, a:focus {
+  color: $primary-color;
+}
+
+/* site footer with AS version, "Hosted by LibraryHost", etc. */
+div.panel-footer {
+  text-align: right;
+}
