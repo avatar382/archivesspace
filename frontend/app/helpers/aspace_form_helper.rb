@@ -266,6 +266,17 @@ module AspaceFormHelper
         value = value.to_s
       end
 
+      begin
+        jsonmodel_type = obj["jsonmodel_type"]
+        prefix = opts[:plugin] ? 'plugins.' : ''
+        schema = JSONModel(jsonmodel_type).schema
+        if (schema["properties"][name].has_key?('dynamic_enum'))
+          value = I18n.t({:enumeration => schema["properties"][name]["dynamic_enum"], :value => value}, :default => value)
+        elsif schema["properties"][name].has_key?("enum")
+          value = I18n.t("#{prefix}#{jsonmodel_type.to_s}.#{property}_#{value}", :default => value)
+        end
+      rescue
+      end
 
       if opts.has_key? :controls_class
         opts[:controls_class] << " label-only"
@@ -278,6 +289,18 @@ module AspaceFormHelper
 
     def label_and_merge_select(name, default = "", opts = {})
       value = obj[name]
+
+      begin
+        jsonmodel_type = obj["jsonmodel_type"]
+        prefix = opts[:plugin] ? 'plugins.' : ''
+        schema = JSONModel(jsonmodel_type).schema
+        if (schema["properties"][name].has_key?('dynamic_enum'))
+          value = I18n.t({:enumeration => schema["properties"][name]["dynamic_enum"], :value => value}, :default => value)
+        elsif schema["properties"][name].has_key?("enum")
+          value = I18n.t("#{prefix}#{jsonmodel_type.to_s}.#{property}_#{value}", :default => value)
+        end
+      rescue
+      end
 
       if opts.has_key? :controls_class
         opts[:controls_class] << " label-only"
