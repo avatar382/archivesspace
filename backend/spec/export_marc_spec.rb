@@ -45,6 +45,62 @@ describe 'MARC Export' do
     code.to_s
   end
 
+ describe "root node content" do
+    before(:each) do
+      @marc = get_marc(create(:json_resource))
+      @xml = @marc.to_xml
+    end
+
+
+    it "root node should have marc namespace" do
+      expect(@xml).to match(/<marc:collection/)
+      expect(@xml).to match(/<\/marc:collection>/)
+    end
+
+    it "root node should have xmlns:marc defined" do
+      expect(@xml).to match(/<marc:collection.*xmlns:marc="http:\/\/www.loc.gov\/MARC21\/slim"/)
+
+    end
+
+    it "root node should have xmlns:xsi defined" do
+      expect(@xml).to match(/<marc:collection.*xmlns:xsi="http:\/\/www.w3.org\/2001\/XMLSchema-instance"/)
+    end
+
+    it "root node should have xsi:schemaLocation defined" do
+      expect(@xml).to match(/<marc:collection.*xsi:schemaLocation="http:\/\/www.loc.gov\/standards\/marcxml\/schema\/MARC21slim.xsd http:\/\/www.loc.gov\/MARC21\/slim"/)
+    end
+  end
+
+describe "datafield element order" do
+  before(:each) do
+    @marc = get_marc(create(:json_resource))
+    @xml = @marc.to_xml
+  end
+
+  it "should generate XML with the datafield tags in numerical order" do
+    datafield_element_count = @marc.xpath("//marc:record/marc:datafield").length
+    last_tag = 0
+
+    # loop through all tags. make sure that datafield[@tag] is a smaller number than the preceeding one.
+    0.upto(datafield_element_count - 1) do |i|
+      this_tag = @marc.xpath("//marc:record/marc:datafield")[i]["tag"].to_i
+      expect(this_tag >= last_tag).to eq(true)
+      last_tag = this_tag
+    end
+  end
+end
+
+ describe "040 cataloging source field" do
+   before(:each) do
+     @marc = get_marc(create(:json_resource))
+     @xml = @marc.to_xml
+   end
+
+   it "MARC record should only have one 040 element in the document" do
+     forty_count = @xml.scan(/(?=#{'tag="040"'})/).count
+     expect(forty_count).to eql(1)
+   end
+  end
 
   describe "datafield 110 name mapping" do
 
@@ -102,10 +158,19 @@ describe 'MARC Export' do
       end
     end
 
+    it "adds a comma after $a if a date is defined" do
+      expect(@marc.at("datafield[@tag='245']/subfield[@code='a']/text()").to_s[-1]).to eq(",")
+    end
+
 
     it "maps the first bulk date to subfield 'g'" do
       date = @dates.find{|d| d.date_type == 'bulk'}
-      @marc.should have_tag "datafield[@tag='245']/subfield[@code='g']" => "#{date.begin} - #{date.end}"
+
+      if date.expression
+        @marc.should have_tag "datafield[@tag='245']/subfield[@code='g']" => "#{date.expression}"
+      else
+        @marc.should have_tag "datafield[@tag='245']/subfield[@code='g']" => "#{date.begin} - #{date.end}"
+      end
     end
 
 
@@ -113,6 +178,85 @@ describe 'MARC Export' do
       %w(f g).each do |code|
         @marc.should_not have_tag "datafield[@tag='245']/subfield[@code='#{code}'][2]"
       end
+    end
+
+    it "sets first indicator to 0 if the resource has no creator" do
+      @marc.should have_tag "datafield[@tag='245' and @ind1='0']"
+    end
+  end
+
+  describe "datafield 245 mapping dates" do
+    before(:each) do
+
+      @range = [nil, nil].map { generate(:yyyy_mm_dd) }.sort
+
+      @inclusive_single = build(:json_date,
+                                :date_type => 'inclusive',
+                                :begin => @range[0],
+                                :end => nil,
+                                :expression => nil)
+
+      @bulk_single = build(:json_date,
+                           :date_type => 'bulk',
+                           :begin => @range[0],
+                           :end => nil,
+                           :expression => nil)
+
+      @inclusive_range = build(:json_date,
+                               :date_type => 'inclusive',
+                               :begin => @range[0],
+                               :end => @range[1],
+                               :expression => nil)
+
+
+      @bulk_range = build(:json_date,
+                          :date_type => 'bulk',
+                          :begin => @range[0],
+                          :end => @range[1],
+                          :expression => nil)
+
+      @inclusive_expression = build(:json_date,
+                                    :date_type => 'inclusive',
+                                    :begin => @range[0],
+                                    :end => @range[1],
+                                    :expression => "1981ish")
+
+      @bulk_expression = build(:json_date,
+                               :date_type => 'bulk',
+                               :begin => @range[0],
+                               :end => @range[1],
+                               :expression => "1991ish")
+
+    end
+
+    it "should use expression in bulk and inclusive dates if provided" do
+      dates = [@inclusive_expression, @bulk_expression]
+
+      resource = create(:json_resource, :dates => dates)
+      marc = get_marc(resource)
+
+      marc.should have_tag "datafield[@tag='245']/subfield[@code='f']" => "1981ish"
+      marc.should have_tag "datafield[@tag='245']/subfield[@code='g']" => "1991ish"
+    end
+
+    it "should follow the format for single dates" do
+      dates = [@inclusive_single, @bulk_single]
+
+      resource = create(:json_resource, :dates => dates)
+      marc = get_marc(resource)
+
+      marc.should have_tag "datafield[@tag='245']/subfield[@code='f']" => "#{@range[0]}"
+      marc.should have_tag "datafield[@tag='245']/subfield[@code='g']" => "#{@range[0]}"
+    end
+
+    it "should follow the format for ranged dates" do
+      dates = [@inclusive_range, @bulk_range]
+
+      resource = create(:json_resource, :dates => dates)
+      marc = get_marc(resource)
+
+      marc.should have_tag "datafield[@tag='245']/subfield[@code='f']" => "#{@range[0]} - #{@range[1]}"
+      marc.should have_tag "datafield[@tag='245']/subfield[@code='g']" => "#{@range[0]} - #{@range[1]}"
     end
   end
 
@@ -140,10 +284,11 @@ describe 'MARC Export' do
     end
 
 
-    it "maps extent number and type to subfield a" do
+    it "maps extent number to subfield a, and type to subfield f" do
       type = I18n.t("enumerations.extent_extent_type.#{@extents[0].extent_type}")
       extent = "#{@extents[0].number} #{type}"
-      @marc.should have_tag "datafield[@tag='300'][1]/subfield[@code='a']" => extent
+      @marc.should have_tag "datafield[@tag='300'][1]/subfield[@code='a']" => @extents[0].number
+      @marc.should have_tag "datafield[@tag='300'][1]/subfield[@code='f']" => type
     end
 
 
@@ -157,7 +302,7 @@ describe 'MARC Export' do
 
     it "maps arrangment and fileplan notes to datafield 351" do
       @notes.each do |note|
-        @marc.should have_tag "datafield[@tag='351']/subfield[@code='b'][1]" => note_content(note)
+        @marc.should have_tag "datafield[@tag='351']/subfield[@code='a'][1]" => note_content(note)
       end
     end
   end
@@ -228,7 +373,8 @@ describe 'MARC Export' do
     end
 
     it "should strip out the mixed content in title" do
-      @marc.should have_tag "datafield[@tag='245']/subfield[@code='a']" => "Foo  BAR  Jones"
+      @marc.should have_tag "datafield[@tag='245']/subfield[@code='a']"
+      expect(@marc.at("datafield[@tag='245']/subfield[@code='a']/text()").to_s).to match(/Foo  BAR  Jones/)
     end
   end
 
@@ -270,7 +416,7 @@ describe 'MARC Export' do
     end
 
     it "provides default values for record/leader: 00000np$ a2200000 u 4500" do
-      @marc1.at("record/leader").should have_inner_text(/00000np.\sa2200000\su\s4500/)
+      @marc1.at("record/leader").should have_inner_text(/00000np.aa2200000\su\s4500/)
     end
 
 
@@ -316,6 +462,11 @@ describe 'MARC Export' do
       @marc1.at("datafield[@tag='040'][@ind1=' '][@ind2=' ']/subfield[@code='c']").should have_inner_text(org_code)
     end
 
+    it "maps language code to datafield[@tag='040' and @ind1=' ' and @ind2=' '] subfield b" do
+      org_code = JSONModel(:repository).find($repo_id).org_code
+      @marc1.at("datafield[@tag='040'][@ind1=' '][@ind2=' ']/subfield[@code='b']").should have_inner_text(@resource1.language)
+    end
+
     it "maps resource.finding_aid_description_rules to df[@tag='040' and @ind1=' ' and @ind2=' ']/sf[@code='e']" do
       @marc1.at("datafield[@tag='040'][@ind1=' '][@ind2=' ']/subfield[@code='e']").should have_inner_text(@resource1.finding_aid_description_rules)
     end
@@ -341,6 +492,54 @@ describe 'MARC Export' do
     end
   end
 
+  describe "agents: include unpublished flag" do
+    before(:all) do
+      @agents = []
+      [
+        [:json_agent_person,
+          :names => [build(:json_name_person,
+                           :prefix => "MR"),
+          :publish => false]
+        ],
+        [:json_agent_corporate_entity,  {:publish => false} ],
+        [:json_agent_family, {:publish => false} ],
+      ].each do |type_and_opts|
+        @agents << create(type_and_opts[0], type_and_opts[1])
+      end
+
+      @resource = create(:json_resource,
+                             :linked_agents => @agents.map.each_with_index {|a, j|
+                              {
+                                :ref => a.uri,
+                                :role => (j == 0) ? 'creator' : 'subject',
+                                :terms => [build(:json_term), build(:json_term)],
+                                :relator => generate(:relator)
+                              }}
+        )
+
+      @marc_unpub_incl   = get_marc(@resource, true)
+      @marc_unpub_unincl = get_marc(@resource, false)
+    end
+
+
+    after(:all) do
+      @resource.delete
+      @agents.each {|a| a.delete}
+    end
+
+    it "should not create elements for unpublished agents if include_unpublished is false" do
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{100}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{610}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{600}']").length).to eq(0)
+    end
+
+    it "should create elements for unpublished agents if include_unpublished is true" do
+      expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{100}']").length > 0).to eq(true)
+      expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{610}']").length > 0).to eq(true)
+      expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{600}']").length > 0).to eq(true)
+    end
+  end
+
 
   describe 'linked agent mappings' do
     before(:all) do
@@ -355,7 +554,16 @@ describe 'MARC Export' do
         [:json_agent_person,
           :names => [build(:json_name_person,
                            :prefix => "MS")]
-        ]
+        ],
+        [:json_agent_person,
+          :names => [build(:json_name_person,
+                           :prefix => "QR")]
+        ],
+        [:json_agent_person,
+          :names => [build(:json_name_person,
+                           :prefix => "FZ")]
+        ],
+        [:json_agent_family, {}]
       ].each do |type_and_opts|
         @agents << create(type_and_opts[0], type_and_opts[1])
       end
@@ -383,7 +591,6 @@ describe 'MARC Export' do
 
     after(:all) do
       @resources.each {|r| r.delete}
-      @agents.each {|a| a.delete}
     end
 
 
@@ -418,7 +625,7 @@ describe 'MARC Export' do
       df = @marcs[2].at("datafield[@tag='100'][@ind1='3'][@ind2=' ']")
 
       df.at("subfield[@code='a']").should have_inner_text name['family_name']
-      df.at("subfield[@code='c']").should have_inner_text name['prefix']
+      df.at("subfield[@code='c']").should have_inner_text name['qualifier']
       df.at("subfield[@code='d']").should have_inner_text name['dates']
     end
 
@@ -458,7 +665,7 @@ describe 'MARC Export' do
       df = @marcs[0].at("datafield[@tag='600'][@ind1='3'][@ind2='#{ind2}']")
 
       df.at("subfield[@code='a']").should have_inner_text name['family_name']
-      df.at("subfield[@code='c']").should have_inner_text name['prefix']
+      df.at("subfield[@code='c']").should have_inner_text name['qualifier']
       df.at("subfield[@code='d']").should have_inner_text name['dates']
     end
 
@@ -476,8 +683,24 @@ describe 'MARC Export' do
       df.at("subfield[@code='d']").should have_inner_text name['dates']
     end
 
-  end
+    # opposite case of spec found on line 143
+    it "245 tag: sets first indicator to 1 if the resource has an creator" do
+      @marcs[0].should have_tag "marc:datafield[@tag='245' and @ind1='1']"
+    end
 
+    it "stores qualifier in $c for secondary family creators " do
+      name = @agents[6]['names'][0]
+      inverted = name['name_order'] == 'direct' ? '0' : '1'
+
+      expect(@marcs[0].xpath("//marc:datafield[@tag='700']/marc:subfield[@code='c'][contains(text(), '#{name['qualifier']}')]").length).to eq(1)
+    end
+
+    it "creates multiple 700 tags for multiple owner agents" do
+      # 4 owner agents are linked above in before block in line 373, @agents
+
+      expect(@marcs[0].xpath("//marc:datafield[@tag='700']").length).to eq(4)
+    end
+  end
 
   describe "note mappings" do
 
@@ -488,7 +711,8 @@ describe 'MARC Export' do
     before(:all) do
 
       @resource = create(:json_resource,
-                         :notes => full_note_set)
+                         :notes => full_note_set(true),
+                         :publish => true)
 
       @marc = get_marc(@resource)
     end
@@ -536,8 +760,8 @@ describe 'MARC Export' do
     end
 
 
-    it "maps notes of type 'prefercite' to df 524 ('8', ' '), sf a" do
-      note_test(@resource, @marc, %w(prefercite), ['524', '8', ' '], 'a')
+    it "maps notes of type 'prefercite' to df 524 (' ', ' '), sf a" do
+      note_test(@resource, @marc, %w(prefercite), ['524', ' ', ' '], 'a')
     end
 
 
@@ -566,8 +790,8 @@ describe 'MARC Export' do
     end
 
 
-    it "maps notes of type 'relatedmaterial' to df 544 (' ', ' '), sf a" do
-      note_test(@resource, @marc, %w(relatedmaterial), ['544', ' ', ' '], 'a')
+    it "maps notes of type 'relatedmaterial' to df 544 (' ', ' '), sf d" do
+      note_test(@resource, @marc, %w(relatedmaterial), ['544', ' ', ' '], 'd')
     end
 
 
@@ -581,12 +805,17 @@ describe 'MARC Export' do
     end
 
 
-    it "maps resource.ead_location to df 555 (' ', ' '), sf a" do
-      df = @marc.df('555', ' ', ' ')
+    it "maps resource.ead_location to df 856 ('4', '2'), sf u" do
+      df = @marc.df('856', '4', '2')
       df.sf_t('u').should eq(@resource.ead_location)
-      df.sf_t('a').should eq("Finding aid online:")
+      df.sf_t('z').should eq("Finding aid online:")
     end
 
+    it "maps resource.finding_aid_note to df 555 ('0', ' '), sf u" do
+      df = @marc.df('555', '0', ' ')
+      df.sf_t('u').should eq(@resource.finding_aid_note)
+      df.sf_t('3').should eq("Finding aids:")
+    end
 
     it "maps public notes of type 'custodhist' to df 561 ('1', ' '), sf a" do
       note_test(@resource, @marc, %w(custodhist), ['561', '1', ' '], 'a', {'publish' => true})
@@ -614,12 +843,79 @@ describe 'MARC Export' do
 
   end
 
+  describe "notes: include unpublished flag" do
+    before(:all) do
+      @resource = create(:json_resource,
+                         :notes => full_note_set(false))
 
-  describe "https://archivesspace.atlassian.net/browse/AR-973" do
-    # Note: I'm unclear what this issue actually means
+      @marc_unpub_incl   = get_marc(@resource, true)
+      @marc_unpub_unincl = get_marc(@resource, false)
+    end
 
+    after(:all) do
+      @resource.delete
+    end
+
+    it "should not create elements for unpublished notes if include_unpublished is false" do
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{506}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{524}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{535}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{540}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{541}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{544}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{545}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{561}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{583}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{584}']").length).to eq(0)
+    end
+
+    it "should create elements for unpublished notes if include_unpublished is true" do
+      expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{506}']").length > 0).to eq(true)
+      expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{524}']").length > 0).to eq(true)
+      expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{535}']").length > 0).to eq(true)
+      expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{540}']").length > 0).to eq(true)
+      expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{541}']").length > 0).to eq(true)
+      expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{544}']").length > 0).to eq(true)
+      expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{545}']").length > 0).to eq(true)
+      expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{561}']").length > 0).to eq(true)
+      expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{583}']").length > 0).to eq(true)
+      expect(@marc_unpub_incl.xpath("//marc:datafield[@tag = '#{584}']").length > 0).to eq(true)
+    end
+
+  end
+
+  describe "notes: inherit publish from parent" do
+    before(:all) do
+      @resource = create(:json_resource,
+                         :notes => full_note_set(true),
+                         :publish => false)
+
+      @marc_unpub_unincl = get_marc(@resource, false)
+    end
+
+    after(:all) do
+      @resource.delete
+    end
+
+    it "should not create elements for published notes if they have a parent with publish == false" do
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{506}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{524}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{535}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{540}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{541}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{544}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{545}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{561}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{583}']").length).to eq(0)
+      expect(@marc_unpub_unincl.xpath("//marc:datafield[@tag = '#{584}']").length).to eq(0)
+    end
+  end
+
+  describe "049 OCLC tag" do
     before(:all) do
       @resource = create(:json_resource)
+      @org_code = JSONModel(:repository).find($repo_id).org_code
+
       @marc = get_marc(@resource)
     end
 
@@ -628,9 +924,8 @@ describe 'MARC Export' do
     end
 
 
-    it "maps resource language code to 040$b and 049$a" do
-      @marc.at("datafield[@tag='040'][@ind1='0'][@ind2=' ']/subfield[@code='b']").should have_inner_text(@resource.language)
-      @marc.at("datafield[@tag='049'][@ind1='0'][@ind2=' ']/subfield[@code='a']").should have_inner_text(@resource.language)
+    it "maps org_code to 049 tag" do
+      @marc.at("datafield[@tag='049'][@ind1=' '][@ind2=' ']/subfield[@code='a']").should have_inner_text(@org_code)
     end
   end
 

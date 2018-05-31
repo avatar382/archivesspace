@@ -71,9 +71,15 @@ module ExportHelpers
   end
 
 
-  def generate_marc(id)
+  def generate_marc(id, include_unpublished = false)
     obj = resolve_references(Resource.to_jsonmodel(id), ['repository', 'linked_agents', 'subjects'])
-    marc = ASpaceExport.model(:marc21).from_resource(JSONModel(:resource).new(obj))
+
+    opts = {:include_unpublished => include_unpublished}
+
+    resource = JSONModel(:resource).new(obj)
+    JSONModel::set_publish_flags!(resource)
+    marc = ASpaceExport.model(:marc21).from_resource(resource, opts)
+
     ASpaceExport::serialize(marc)
   end
 

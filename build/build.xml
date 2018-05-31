@@ -275,7 +275,9 @@
         <env key="GEM_HOME" value="${gem_home}" />
         <env key="GEM_PATH" value="" />
         <env key="BUNDLE_PATH" value="${gem_home}" />
+        <env key="BUNDLE_GEMFILE" value="" />
         <env key="ASPACE_INTEGRATION" value="${aspace.integration}" />
+        <env key="JRUBY_OPTS" value="--debug" />
         <arg line="app/main.rb ${aspace.backend.port}" />
       </java>
       <record name="backend_test_log.out" action="stop" />
@@ -428,6 +430,7 @@
       <env key="GEM_PATH" value="" />
       <env key="RAILS_ENV" value="${rails.env}" />
       <env key="BUNDLE_PATH" value="${gem_home}" />
+      <env key="JRUBY_OPTS" value="--debug" />
       <env key="ASPACE_INTEGRATION" value="${aspace.integration}" />
       <arg line="script/rails s mizuno -b 0.0.0.0 --port=${aspace.frontend.port}" />
       </java>
@@ -809,7 +812,7 @@
           description="Generate coverage reports for the frontend">
   </target>
 
-  <target name="public:coverage" depends="set-classpath, public:clean"
+  <target name="public:coverage" depends="set-classpath, public:clean, public:test"
           description="Generate coverage reports for the public interface">
   </target>
 
@@ -819,11 +822,12 @@
   </target>
 
   <target name="headless-tests" description="Run the non-Selenium tests">
+    <antcall target="backend:integration" />
     <antcall target="backend:test" />
     <antcall target="indexer:test" />
     <antcall target="frontend:test"/>
-    <antcall target="backend:integration" />
     <antcall target="common:test" />
+    <antcall target="public:test" />    
   </target>
 
 
@@ -858,6 +862,24 @@
       <fileset file="../frontend/app/assets/stylesheets/archivesspace/largetree.less" />
     </concat>
 
+  </target>
+
+  <target name="public:test" depends="set-classpath" description="Run the unit test suite">
+    <property name="spec" value=""/>
+    <property name="example" value=""/>
+    <condition property="example-arg" value="-e &quot;${example}&quot;" else="">
+      <isset property="example"/>
+    </condition>
+    <java classpath="${jruby_classpath}" classname="org.jruby.Main" fork="true"
+          failonerror="true"
+          dir="../public">
+      <jvmarg line="${default_java_options} ${env.JAVA_OPTS}"/>
+      <env key="COVERAGE_REPORTS" value="${COVERAGE_REPORTS}" />
+      <env key="GEM_HOME" value="${gem_home}" />
+      <env key="GEM_PATH" value="" />
+      <env key="BUNDLE_PATH" value="${gem_home}" />
+      <arg line="--debug ../build/gems/bin/rspec -b --format d --order rand:1 ${example-arg}" />
+    </java>
   </target>
 
 

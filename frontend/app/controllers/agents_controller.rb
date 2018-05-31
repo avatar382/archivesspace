@@ -7,21 +7,21 @@ class AgentsController < ApplicationController
 
 
   before_action :assign_types
-  
+
   include ExportHelper
 
   def index
-    respond_to do |format| 
-      format.html {   
+    respond_to do |format|
+      format.html {
         @search_data = Search.for_type(session[:repo_id], "agent", {"sort" => "title_sort asc"}.merge(params_for_backend_search.merge({"facet[]" => SearchResultData.AGENT_FACETS})))
       }
-      format.csv { 
+      format.csv {
         search_params = params_for_backend_search.merge({"facet[]" => SearchResultData.AGENT_FACETS})
         search_params["type[]"] = "agent"
         uri = "/repositories/#{session[:repo_id]}/search"
         csv_response( uri, search_params )
-      }  
-    end 
+      }
+    end
   end
 
   def show
@@ -34,7 +34,7 @@ class AgentsController < ApplicationController
       defaults = DefaultValues.get @agent_type.to_s
       @agent.update(defaults.values) if defaults
     end
-     
+
     required = RequiredFields.get @agent_type.to_s
     begin
       @agent.update_concat(required.values) if required
@@ -230,7 +230,7 @@ class AgentsController < ApplicationController
           flash[:success] = I18n.t("agent._frontend.messages.merged")
           resolver = Resolver.new(request.target["ref"])
           redirect_to(resolver.view_uri)
-        else 
+        else
           raise (response.message)
         end
       rescue ValidationException => e
@@ -244,7 +244,7 @@ class AgentsController < ApplicationController
         redirect_to({:action => :show, :id => params[:id]}.merge(extra_params))
       end
     end
-    
+
   end
 
 
@@ -280,7 +280,7 @@ class AgentsController < ApplicationController
           @agent.names[0]["authorized"] = true
         end
         if !display
-          @agent.names[0]["is_display_name"] = true 
+          @agent.names[0]["is_display_name"] = true
         end
       end
     end

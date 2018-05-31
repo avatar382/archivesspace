@@ -210,7 +210,8 @@ en:
     user_mtime: Modified
     primary_type: Record Type
     processing_priority: Processing Priority
-    processing_status: Status
+    processing_status: Processing Status
+    processing_hours_total: Total Hours
     parent_id: Record Type
     create_time: Created
     authority_id: Authority ID
@@ -299,9 +300,9 @@ en:
     manage_location_profiles: Manage Location Profiles
     manage_top_containers: Manage Top Containers
     manage_enumerations: Manage Controlled Value Lists
-    user_global_preferences: My Global Preferences
-    user_repo_preferences: My Repository Preferences
-    repo_preferences: User Preference Defaults
+    global_preferences: Global Preferences
+    user_repo_preferences: Repository Preferences
+    repo_preferences: User Preferences
     manage_user_access: Manage User Access
     logout: Logout
     login: Sign In

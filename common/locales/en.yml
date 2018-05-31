@@ -100,7 +100,7 @@ en:
     level: VRA Core Level
     level_tooltip: |
         <p>Primarily for use in multi-level VRA Core compliant records in order to indicate description is about a collection, a work, or an image.</p>
-    digital_object_type: Type
+    digital_object_type: Digital Object Type
     digital_object_type_tooltip: |
         <p>A generic term indicating the basic content type of the digital object. The default options correspond to the MODS &lt;typeOfResource&gt; element.</p>
     language: Language
@@ -134,7 +134,7 @@ en:
     _plural: Digital Object Components
 
   location: &location_attributes
-    title: Title
+    title: Location
     temporary_question: Temporary?
     temporary: Temporary
     temporary_tooltip: |
@@ -1042,7 +1042,7 @@ en:
     date_type_message: Select a Type to enter normalized date or date range
     expression: Expression
     expression_tooltip: |
-        <p>CONDITIONALLY REQUIRED FIELD: A natural language expression specifying the date or date range of the materials in the accession. Required when a normalized date is not recorded.</p>
+        <p>CONDITIONALLY REQUIRED FIELD: A natural language expression specifying the date or date range of the materials. Required when a normalized date is not recorded.</p>
         <p>See DACS 2.4</p>
         <p>Examples:</p>
         <ul>
@@ -1103,6 +1103,9 @@ en:
     <<: *date_attributes
 
   usage_date:
+    <<: *date_attributes
+
+  event_date:
     <<: *date_attributes
 
   archival_record_date:
@@ -1447,6 +1450,7 @@ en:
       update_assessment_record: create/update assessment records
       delete_assessment_record: delete assessment records
       manage_assessment_attributes: create/update/delete repository assessment attributes definitions
+      manage_enumeration_record: create/update/delete controlled value records
     _singular: Group
     _plural: Groups
 
@@ -1745,7 +1749,7 @@ en:
     processing_total_extent_type_tooltip: *extent_type_tooltip
     processing_total_extent_type_: --
     processing_hours_total: Total Processing Hours
-    processing_hours_total_short: Total hours
+    processing_hours_total_short: Total Hours
     processing_hours_total_tooltip: |
         <p>The numerical result of multiplying "Processing hours per foot estimate" by "Processing total extent". The value can be overwritten to reflect the actual processing time and not a value based on the estimated processing hrs/unit value.</p>
     processing_plan: Processing Plan
@@ -1834,9 +1838,9 @@ en:
     global_message: Edit these values to set system-wide user preference defaults. These values can be overridden by repository defaults or a user's own preferences.
     repo: User Preference Defaults
     repo_message: Edit these values to set user preference defaults for the current repository. These values can be overridden by a user's own preferences.
-    user_global: My Global Preferences
+    user_global: Global Preferences
     user_global_message: Edit these values to set your system-wide user preferences. These values can be overridden by repository defaults or by your own preferences for a repository.
-    user_repo: My Repository Preferences
+    user_repo: Repository Preferences
     user_repo_message: Edit these values to set your user preferences for this repository. These values cannot be overridden.
     _singular: Preferences
     _plural: Preferences
