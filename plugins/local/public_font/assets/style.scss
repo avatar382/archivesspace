@@ -27,10 +27,19 @@ $alert-warning-text: red;
   }
   .logo {
     float: none;
-    height: 150px;
+    height: 70px;
     padding-left: 40px;
     padding-bottom: 10px;
+    margin-top: 10px;
+    display: inline;
   }
+
+	p.logo_header {
+		float: right;
+		margin-right: 60px;
+		font-size: 18px;
+		margin-top: 14px;
+	}
 }
 
 .navbar-header.top-bar {
@@ -56,3 +65,14 @@ a:hover, a:focus {
 div.panel-footer {
   text-align: right;
 }
+
+/* CUSTOM FONT */
+@font-face {
+    font-family: "Glober";
+    src: url("Glober.woff") format('woff');
+}
+
+body {
+  font-family: Glober;
+}
+
