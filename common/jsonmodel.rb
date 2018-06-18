@@ -118,6 +118,9 @@ module JSONModel
       end
     end
 
+    puts "++++++++++++++++++++++++++++"
+    puts "Returning nil: " + reference.to_s
+
     nil
   end
 

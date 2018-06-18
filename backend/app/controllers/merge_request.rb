@@ -1,3 +1,4 @@
+require 'pry'
 class ArchivesSpaceService < Sinatra::Base
 
   Endpoint.post('/merge_requests/subject')
@@ -178,6 +179,17 @@ class ArchivesSpaceService < Sinatra::Base
   end
 
   def merge_details(target, victim, selections, dry_run)
+    puts "++++++++++++++++++++++++++++"
+    puts "IN MERGE DETAILS"
+
+
+    puts "BEFORE!"
+    puts target[:linked_events].inspect
+    puts victim[:linked_events].inspect
+
+    target[:linked_events] = []
+    victim[:linked_events] = []
+
     selections.each_key do |key|
       path = key.split(".")
       path_fix = []

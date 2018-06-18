@@ -231,6 +231,9 @@ class AgentsController < ApplicationController
           resolver = Resolver.new(request.target["ref"])
           redirect_to(resolver.view_uri)
         else
+          puts "++++++++++++++++++++++++++++"
+          puts "IN CONTROLLER"
+          puts request.target.inspect
           raise (response.message)
         end
       rescue ValidationException => e
@@ -242,6 +245,12 @@ class AgentsController < ApplicationController
       rescue RecordNotFound => e
         flash[:error] = I18n.t("errors.error_404")
         redirect_to({:action => :show, :id => params[:id]}.merge(extra_params))
+      rescue => e
+        puts "++++++++++++++++++++++++++++"
+        puts "EXCEPTION"
+        puts e.message
+        puts e.backtrace
+        raise e
       end
     end
 
