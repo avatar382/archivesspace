@@ -1,0 +1,52 @@
+<div class="row">
+  <div class="col-sm-12">
+    <h1><%= t('brand.welcome_head') %></h1>
+      <div> <%= t('brand.welcome_message').html_safe %> </div>
+    <%= render partial: 'shared/search', locals: {:search_url => "/search",
+     :title => t('archive._plural'),
+     :limit_options => [["#{t('actions.search')} #{t('search-limits.all')}",''], 
+            [t('search-limit', :limit => t('search-limits.resources')),'resource'],
+            [t('search-limit', :limit => t('search-limits.digital')),'digital_object']],
+     :field_options => [["#{t('search_results.filter.fullrecord')}",''],
+            ["#{t('search_results.filter.title')}",'title'],
+            ["#{t('search_results.filter.creators')}",'creators_text'],
+           ["#{t('search_results.filter.notes')}", 'notes'] ] } %>
+  </div>
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <p>Welcome to the searchable online catalog of <b>Concordia Historical Institute’s (CHI) archival holdings.</b>CHI is the official Department of Archives and History for The Lutheran Church­—Missouri Synod located in Saint Louis, Missouri. The scope of this collection is North American Lutheranism – its global mission activities and its European roots.</p>
+  <p><b>Tips</b> for searching the catalog:</p>
+  <ol>
+    <li>
+      Include the word “and” between your search terms to ensure that both words must occur in the resource.
+     <ol type="a">
+        <li>(example: Zion and Milwaukee)</li>
+      </ol>
+    </li>
+    <li>
+      If you are looking for specific media types include one of the following in your search:  cassette, compact disc, reel, DVD, VHS, filmstrip, microfilm, photo, coin, or museum (for 3-dimensional artifacts)
+      <ol type="a">
+        <li>(example: prayer and filmstrip)</li>
+      </ol>
+    </li>
+    <li>
+      Use the asterisk (*) wildcard:
+      <ol type="a">
+        <li>(example: film*) will include film, films, filmstrip, and filmstrips in the result.</li>
+        <li>(example: mission*) will include mission, missions, missionary, and missional</li>
+      </ol>
+    </li>
+    <li>To locate print books visit our library catalog at: <a href="http://bridges.searchmobius.org/search~S11">http://bridges.searchmobius.org/search~S11</a></li>
+  </ol>
+  <p>We would love to be able to serve your research needs as we Move Lutheran History Forward Together. Please <b>contact</b> us at 314-505-7935 or <a href="mailto:reference@lutheranhistory.org.">reference@lutheranhistory.org.</a> 
+
+</div>

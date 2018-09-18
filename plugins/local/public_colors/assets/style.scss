@@ -18,7 +18,7 @@ $alert-warning-text: red;
 
 
 #header {
-  background-color: #00336D;
+  background-color: #fff;
   > .row {
     height: auto;
     > div {
@@ -30,13 +30,7 @@ $alert-warning-text: red;
     height: 120px;
     padding-left: 40px;
     padding-bottom: 10px;
-    padding-top: 10px;
   }
-}
-
-ul.address {
-  list-style-type: none;
-  text-align: left;
 }
 
 .navbar-header.top-bar {
