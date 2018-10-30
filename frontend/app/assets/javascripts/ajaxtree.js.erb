@@ -323,7 +323,9 @@ AjaxTree.prototype.add_new_after = function(node, level) {
         else {
             var sibling_form_id = "#new_digital_object_component";
         }
-        var sibling_node_id = node[0].id
+
+        // node[0].id looks like this: "archival_object_34"
+        var sibling_node_id = node[0].id.split("_").pop();
 
         parent_id = node.data('parent_id');
     }
@@ -363,7 +365,13 @@ AjaxTree.prototype.add_new_after = function(node, level) {
         // This will be used by the controller to set the position of the new AO or DOC accordingly.
         if(typeof sibling_form_id !== 'undefined' && 
            typeof sibling_node_id !== 'undefined') {
-            $(sibling_form_id).prepend("<input type='hidden' name='sibling_id' value='"+sibling_node_id+"'>");
+
+            if(node.data['jsonmodel_type'] == "archival_object") {
+                field_name = 'archival_object[sibling_id]';
+            } else {
+                field_name = 'digital_object_component[sibling_id]';
+            }
+            $(sibling_form_id).prepend("<input type='hidden' name='"+field_name+"' value='"+sibling_node_id+"'>");
         }
     });
 

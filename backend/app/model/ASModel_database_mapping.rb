@@ -36,9 +36,28 @@ module ASModel
           hash.delete(nested_record[:json_property].to_s)
         end
 
+        set_position_from_sibling!(jsonmodel_class, hash)
+
         hash['json_schema_version'] = jsonmodel_class.schema_version
 
+
         hash
+      end
+
+
+      # ANW-373
+      # if creatomg an ArchivalObject or DigitalObjectComponent, and a sibling is set,
+      # find that sibling record and set the position so that this new record is adjacent to it.
+      # This may be a strange place for this logic -- not sure why, but running this code in ASModel_crud#create_from_json results in the object being updated, but not saved to the DB with the correct value.
+      def set_position_from_sibling!(klass, hash)
+        if klass == JSONModel(:digital_object_component) || klass == JSONModel(:archival_object)
+          if hash["sibling_id"]
+
+            # TODO: SET POSITION HERE!
+            # LOOK up sibling ID, find position and increment it intelligently
+            hash['position'] = 72
+          end
+        end
       end
 
 

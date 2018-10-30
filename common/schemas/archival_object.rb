@@ -8,6 +8,8 @@
     "properties" => {
       "ref_id" => {"type" => "string", "maxLength" => 255, "pattern" => "\\A[a-zA-Z0-9\\-_:\\.]*\\z"},
       "component_id" => {"type" => "string", "maxLength" => 255, "required" => false, "default" => ""},
+      
+      "sibling_id" => {"type" => "string", "maxLength" => 255},
 
       "level" => {"type" => "string", "ifmissing" => "error", "dynamic_enum" => "archival_record_level"},
       "other_level" => {"type" => "string", "maxLength" => 255},
