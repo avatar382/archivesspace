@@ -311,10 +311,19 @@ AjaxTree.prototype.add_new_after = function(node, level) {
             }
         }
     } else {
-        /* We're adding a new sibling to the end of the current level */
-        var endmarker = node.nextAll('.end-marker.indent-level-'+level+':last');
-        endmarker.after($new_tr);
+        /* We're adding a new sibling right after the node selected */
+        node.after($new_tr);
         $new_tr.find('.record-title')[0].focus();
+
+        // ANW-373
+        // set some variables for the type we're working with, as well as the sibling ID we want this node to follow.
+        if(node.data('jsonmodel_type') == "archival_object") {
+            var sibling_form_id = "#archival_object_form";
+        }
+        else {
+            var sibling_form_id = "#new_digital_object_component";
+        }
+        var sibling_node_id = node[0].id
 
         parent_id = node.data('parent_id');
     }
@@ -348,7 +357,17 @@ AjaxTree.prototype.add_new_after = function(node, level) {
             self.quietly_change_hash('tree::'+tree_id);
             self.loadPaneForId(tree_id);
         });
+
+        // ANW-373
+        // after loading the updated form, insert a hidden field tag into the DOM containing the ID of the sibling we want to insert new thing after.
+        // This will be used by the controller to set the position of the new AO or DOC accordingly.
+        if(typeof sibling_form_id !== 'undefined' && 
+           typeof sibling_node_id !== 'undefined') {
+            $(sibling_form_id).prepend("<input type='hidden' name='sibling_id' value='"+sibling_node_id+"'>");
+        }
     });
+
+
 };
 
 AjaxTree.prototype.check_for_form_changes = function(target_tree_id, callback) {
