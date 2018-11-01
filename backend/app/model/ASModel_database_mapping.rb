@@ -46,18 +46,61 @@ module ASModel
 
 
       # ANW-373
-      # if creatomg an ArchivalObject or DigitalObjectComponent, and a sibling is set,
+      # if creating an ArchivalObject or DigitalObjectComponent, and a sibling is set,
       # find that sibling record and set the position so that this new record is adjacent to it.
       # This may be a strange place for this logic -- not sure why, but running this code in ASModel_crud#create_from_json results in the object being updated, but not saved to the DB with the correct value.
       def set_position_from_sibling!(klass, hash)
-        if klass == JSONModel(:digital_object_component) || klass == JSONModel(:archival_object)
-          if hash["sibling_id"]
+        new_position = nil
+        if klass == JSONModel(:archival_object) && hash["sibling_id"]
+          new_position = get_position_between_siblings(hash["sibling_id"], ArchivalObject)
 
-            # TODO: SET POSITION HERE!
-            # LOOK up sibling ID, find position and increment it intelligently
-            hash['position'] = 72
+        elsif klass == JSONModel(:digital_object_component) && hash["sibling_id"]
+          new_position = get_position_between_siblings(hash["sibling_id"], DigitalObjectComponent)
+        end
+
+        if new_position
+          hash['position'] = new_position
+        end
+      end
+
+      # ANW-373
+      # we're only going to override the position of this new entity to place it adjacent to it's sibling if:
+      # - it has more than one sibling, and
+      # - the sibling it should follow isn't itself in the last position
+      # - the difference between the physical positions of both siblings is at least 2
+      # Otherwise, we'll do nothing and the entity will be placed at the end.
+      # This allows for a graceful recovery if something goes wrong, and saves complexity in dealing with edge cases.
+      # Given a position step of 1000, in most cases 8 entities can be placed in between before we run out of positions.
+      def get_position_between_siblings(sibling_id, klass)
+        sibling = klass[sibling_id]
+        new_position = nil
+
+        # has a sibling
+        if sibling
+          sibling_position = sibling.position.to_i
+          siblings = klass.where(root_record_id: sibling.root_record_id).order(:position).all.map { |s| {"id" => s.id, "position" => s.position.to_i} }
+
+          # more than one sibling
+          if siblings.length > 1  
+            sibling_index = siblings.index {|s| s["id"] == sibling_id.to_i }
+
+            # is our sibling the 'oldest' (highest position?) If so, put this new one at the end
+            if sibling_index && sibling_index != siblings.length - 1
+              older_sibling = siblings[sibling_index + 1]
+
+              # some defensive programming here. If for some reason our older sibling doesn't have a position, set the value so that this method breaks out at the next if statement.
+              older_sibling_position = older_sibling && older_sibling["position"] ? older_sibling["position"] : sibling_position
+
+
+              # is the gap between our two siblings at least 2?
+              if older_sibling_position - sibling_position > 1
+                new_position = ((older_sibling_position + sibling_position) / 2).to_i
+              end
+            end
           end
         end
+
+        return new_position
       end
 
 
