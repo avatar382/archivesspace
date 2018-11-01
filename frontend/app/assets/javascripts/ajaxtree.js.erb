@@ -319,9 +319,11 @@ AjaxTree.prototype.add_new_after = function(node, level) {
         // set some variables for the type we're working with, as well as the sibling ID we want this node to follow.
         if(node.data('jsonmodel_type') == "archival_object") {
             var sibling_form_id = "#archival_object_form";
+            var node_type = "archival_object";
         }
         else {
             var sibling_form_id = "#new_digital_object_component";
+            var node_type = "digital_object_component";
         }
 
         // node[0].id looks like this: "archival_object_34"
@@ -366,7 +368,8 @@ AjaxTree.prototype.add_new_after = function(node, level) {
         if(typeof sibling_form_id !== 'undefined' && 
            typeof sibling_node_id !== 'undefined') {
 
-            if(node.data['jsonmodel_type'] == "archival_object") {
+            console.log(node_type);
+            if(node_type == "archival_object") {
                 field_name = 'archival_object[sibling_id]';
             } else {
                 field_name = 'digital_object_component[sibling_id]';
