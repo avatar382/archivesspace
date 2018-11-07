@@ -26,6 +26,12 @@
       </h4>
 
       <fieldset>
+
+        <%# ANW-373: If there is an error and the form is refreshed, bring back our hidden form field so the sibling_id that was previously clicked on isn't lost. %>
+        <% if @archival_object['sibling_id'] %>
+          <input type="hidden" name="archival_object[sibling_id]" value="<%= @archival_object['sibling_id'] %>">
+        <% end %>
+
         <%= form.label_and_textarea("title", :required => :conditionally)%>
 
         <% if form.obj["ref_id"].blank? %>
