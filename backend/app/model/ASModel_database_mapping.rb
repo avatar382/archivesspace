@@ -78,7 +78,13 @@ module ASModel
         # has a sibling
         if sibling
           sibling_position = sibling.position.to_i
-          siblings = klass.where(root_record_id: sibling.root_record_id).order(:position).all.map { |s| {"id" => s.id, "position" => s.position.to_i} }
+
+          # if this record has a parent, use that to find siblings at the same level. If not, use the root_record_id to do the same.
+          if sibling.parent_id
+            siblings = klass.where(parent_id: sibling.parent_id).order(:position).all.map { |s| {"id" => s.id, "position" => s.position.to_i} }
+          elsif sibling.root_record_id
+            siblings = klass.where(root_record_id: sibling.root_record_id, parent_id: nil).order(:position).all.map { |s| {"id" => s.id, "position" => s.position.to_i} }
+          end
 
           # more than one sibling
           if siblings.length > 1  
