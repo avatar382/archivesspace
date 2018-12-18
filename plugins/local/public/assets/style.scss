@@ -18,6 +18,7 @@ $alert-warning-text: red;
 
 
 #header {
+  background-color: #000;
   > .row {
     height: auto;
     > div {
@@ -26,7 +27,7 @@ $alert-warning-text: red;
   }
   .logo {
     float: none;
-    height: 200px;
+    height: 150px;
     padding-left: 40px;
     padding-bottom: 10px;
     padding-top: 10px;
