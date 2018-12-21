@@ -9,6 +9,8 @@ describe 'OAI handler' do
   FIXTURES_DIR = OAIHelper::FIXTURES_DIR
 
   before(:all) do
+    AppConfig[:oai_proxy_url]  = 'http://your-public-oai-url.example.com'
+
     @oai_repo_id, @test_record_count, @test_resource_record, @test_archival_object_record = OAIHelper.load_oai_data
   end
 
