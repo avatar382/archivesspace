@@ -155,7 +155,7 @@ describe 'OAI handler' do
     end
 
     it "does not include an identifier in ListIdentifiers for an entity if that entity has an unpublished ancestor" do
-      first_ao = ArchivalObject.first
+      first_ao = ArchivalObject.where(repo_id: @oai_repo_id).first
       first_ao_root = Resource[first_ao.root_record_id]
 
       expect(list_identifiers("oai_dc").include?("oai:archivesspace//repositories/#{first_ao.repo_id}/archival_objects/#{first_ao.id}")).to eq(true)
@@ -185,24 +185,38 @@ describe 'OAI handler' do
 
     it "supports an unqualified ListRecords request" do
       response = oai_repo.find(:all, {:metadata_prefix => "oai_dc"})
+
       expect(response.records.length).to eq(page_size)
     end
 
-    it "does not list a record in ListRecords if it has an unpublished ancestor" do
-      first_ao = ArchivalObject.first
-      first_ao_root = Resource[first_ao.root_record_id]
+    describe "rightnow" do
+      it "does not list a record in ListRecords if it has an unpublished ancestor" do
+        first_ao = ArchivalObject.where(repo_id: @oai_repo_id).first
+        first_ao_root = Resource[first_ao.root_record_id]
+  
+        response = oai_repo.find(:all, {:metadata_prefix => "oai_dc"})
 
-      response = oai_repo.find(:all, {:metadata_prefix => "oai_dc"})
-      response_uris = response.records.map { |r| r.jsonmodel_record["uri"] }
+        puts "++++++++++++++++++++++++++++++"
+        puts "Test debug"
+        puts "first_ao: " + first_ao.inspect
+        puts "oai_repo_id: " + @oai_repo_id.to_s
+        puts "oai_repo: " + oai_repo.inspect
+        puts "response class: " + response.class.to_s
+        puts "response inspect: " + response.inspect
+        puts "records class: " + response.records.class.to_s
+        puts "records inspect: " + response.records.inspect
 
-      expect(response_uris.include?("/repositories/#{first_ao.repo_id}/archival_objects/#{first_ao.id}")).to eq(true)
-
-      first_ao_root.update(:publish => 0)
-
-      response_2 = oai_repo.find(:all, {:metadata_prefix => "oai_dc"})
-      response_2_uris = response_2.records.map { |r| r.jsonmodel_record["uri"] }
-
-      expect(response_2_uris.include?("/repositories/#{first_ao.repo_id}/archival_objects/#{first_ao.id}")).to eq(false)
+        response_uris = response.records.map { |r| r.jsonmodel_record["uri"] }
+  
+        expect(response_uris.include?("/repositories/#{first_ao.repo_id}/archival_objects/#{first_ao.id}")).to eq(true)
+  
+        first_ao_root.update(:publish => 0)
+  
+        response_2 = oai_repo.find(:all, {:metadata_prefix => "oai_dc"})
+        response_2_uris = response_2.records.map { |r| r.jsonmodel_record["uri"] }
+  
+        expect(response_2_uris.include?("/repositories/#{first_ao.repo_id}/archival_objects/#{first_ao.id}")).to eq(false)
+      end
     end
 
     it "supports resumption tokens" do
@@ -433,19 +447,21 @@ describe 'OAI handler' do
       expect(response.body).not_to match(/note with unpublished parent node/)
     end
 
-    it "does not publish objects via GetRecord with if it has a unpublished ancestor" do
-      first_ao = ArchivalObject.first
-      first_ao_root = Resource[first_ao.root_record_id]
+    describe "rightnow" do
+      it "does not publish objects via GetRecord with if it has a unpublished ancestor" do
+        first_ao = ArchivalObject.where(repo_id: @oai_repo_id).first
+        first_ao_root = Resource[first_ao.root_record_id]
 
-      uri = "/oai?verb=GetRecord&identifier=oai:archivesspace/#{first_ao.uri}&metadataPrefix=oai_dc"
+        uri = "/oai?verb=GetRecord&identifier=oai:archivesspace/#{first_ao.uri}&metadataPrefix=oai_dc"
 
-      response = get uri
-      expect(response.body).to_not match(/<error code="idDoesNotExist">/)
+        response = get uri
+        expect(response.body).to_not match(/<error code="idDoesNotExist">/)
 
-      first_ao_root.update(:publish => 0)
+        first_ao_root.update(:publish => 0)
 
-      response2 = get uri
-      expect(response2.body).to match(/<error code="idDoesNotExist">/)
+        response2 = get uri
+        expect(response2.body).to match(/<error code="idDoesNotExist">/)
+      end
     end
   end
 
