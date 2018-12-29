@@ -9,6 +9,8 @@ describe 'OAI handler' do
   FIXTURES_DIR = OAIHelper::FIXTURES_DIR
 
   before(:all) do
+    # force wipe and reconnect to resolve data dependency issues
+    # DB.get_default_pool.connect(true)
     AppConfig[:oai_proxy_url]  = 'http://your-public-oai-url.example.com'
 
     @oai_repo_id, @test_record_count, @test_resource_record, @test_archival_object_record = OAIHelper.load_oai_data
@@ -195,16 +197,6 @@ describe 'OAI handler' do
         first_ao_root = Resource[first_ao.root_record_id]
   
         response = oai_repo.find(:all, {:metadata_prefix => "oai_dc"})
-
-        puts "++++++++++++++++++++++++++++++"
-        puts "Test debug"
-        puts "first_ao: " + first_ao.inspect
-        puts "oai_repo_id: " + @oai_repo_id.to_s
-        puts "oai_repo: " + oai_repo.inspect
-        puts "response class: " + response.class.to_s
-        puts "response inspect: " + response.inspect
-        puts "records class: " + response.records.class.to_s
-        puts "records inspect: " + response.records.inspect
 
         response_uris = response.records.map { |r| r.jsonmodel_record["uri"] }
   

@@ -30,16 +30,18 @@ class DB
 
   class DBPool
 
-    def connect
+    # sometimes, a data dependency issues lead to test failures.
+    # to prevent that, this method can be used to wipe database and start fresh.
+    def connect(force_reconnect = false)
       # If we're not connected, we're in the process of setting up the primary
       # DB pool, so go ahead and connect to an in-memory Derby instance.
-      if DB.get_default_pool == :not_connected
+      if DB.get_default_pool == :not_connected || force_reconnect
         require "db/db_migrator"
 
         if ENV['ASPACE_TEST_DB_URL']
           test_db_url = ENV['ASPACE_TEST_DB_URL']
         else
-          test_db_url = "jdbc:derby:memory:fakedb;create=true"
+          test_db_url = "jdbc:derby:memory:fakedb#{rand(1000)};create=true"
 
           begin
             java.lang.Class.for_name("org.h2.Driver")
@@ -54,7 +56,7 @@ class DB
                                #:loggers => [Logger.new($stderr)]
                               )
 
-        unless ENV['ASPACE_TEST_DB_PERSIST']
+        unless ENV['ASPACE_TEST_DB_PERSIST'] && !force_reconnect
           DBMigrator.nuke_database(@pool)
         end
 
