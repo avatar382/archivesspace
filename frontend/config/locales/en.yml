@@ -15,11 +15,13 @@ en:
     cut: Cut
     defaults: Default Values
     edit: Edit
+    edit_oai: Edit OAI Settings
     edit_batch: Edit Batch
     edit_groups: Edit Groups
     edit_default_values: Edit Default Values
     edit_default_archival_object_values: Edit Component Defaults
     edit_required_fields: Edit Required Fields
+    edit_global_oai: View/Edit Global OAI Settings
     required: Required Fields
     export: Export
     view: View
@@ -29,9 +31,13 @@ en:
     more: More
     link_to: Link To
     add_prefix: Add
+    merge_replace: Replace
+    merge_add: Add
     merge_confirm_title: Merge into this record?
+    merge_from_browse_confirm_title: Merge selected records?
     merge_subject_confirm_message: "The subject '%{source}' will have the selected records merged into it. All selected records will be deleted and any linked records will be re-linked to this subject."
     merge_agent_confirm_message: "The agent '%{source}' will have the selected records merged into it. All selected records will be deleted and any linked records will be re-linked to this agent."
+    merge_agent_from_browse_confirm_message: "The first agent selected will have the subsequently selected records merged into it. All subsequently selected records will be deleted and any linked records will be re-linked to the first agent selected."
     merge_resource_confirm_message: "The resource '%{source}' will have the selected records merged into it. All selected records will be deleted and any linked records will be re-linked to this resource."
     move: Move
     move_up_a_level: Up a Level
@@ -131,7 +137,7 @@ en:
 
   search_results:
     title: Search Results
-    context: Result context
+    context: Found in
     no_results: No records found
     no_results_prefix: There were no search results for
     result_type: Record Type
@@ -293,6 +299,7 @@ en:
     hide_advanced_search_button_title: Hide Advanced Search
     plugins: Plug-ins
     repositories_manage: Manage Repositories
+    oai_config: Manage OAI-PMH Settings
     manage_groups: Manage Groups
     manage_users: Manage Users
     manage_container_profiles: Manage Container Profiles
@@ -424,6 +431,8 @@ en:
     error_404_message: "The record you've tried to access may no longer exist or you may not have permission to view it."
     error_tree_pane_ajax: An error occurred loading this form.
     merge_conflict: "Merging agent(s) could not complete: %{message}"
+    merge_too_many_victims: Only one agent may be selected for detailed merge.
+    merge_different_types: Agents selected for detailed merge must be of the same type.
     linked_to_assessment: Record cannot be deleted as it is linked to an assessment
 
   accession:
@@ -452,7 +461,7 @@ en:
         updated: Agent Saved
         deleted: Agent Deleted
         delete_conflict: "Agent could not be deleted: <pre>%{error}</pre>"
-        merge_description: Select below agents to merge into
+        merge_description: Select the agent to merge into
         merged: Agent(s) Merged
         please_select_a_agent_to_merge: Please select an agent
       section:
@@ -462,8 +471,11 @@ en:
         contacts: Contact Details
         search_embedded: Linked Records
         linked_via_rights_statement: Linked Records via Rights Statement
+        target_record: This record will be updated
+        victim_record: This record will be deleted
       action:
         create: Create Agent
+        preview: Merge Preview
 
   agent_contact:
     _frontend:
@@ -802,6 +814,10 @@ en:
       action:
         add: Add Revision Statement
 
+  repository_oai:
+    oai_is_disabled: OAI Harvesting Disabled?
+    oai_sets_available: Sets included in OAI
+
   repository:
     _frontend:
       messages:
@@ -820,12 +836,17 @@ en:
         cannot_delete_nonempty: Cannot delete - repository not empty
       section:
         all_fields: Repository Fields
+        oai_fields: OAI Harvest Settings
         transfer: Transfer Repository
+        oai_settings: OAI Settings
       action:
         select: Select Repository
         create: Create Repository
         save: Save Repository
         create: Create Repository
+    _sidebar:
+      oai_settings:
+        _plural: OAI Harvest Settings
 
   resource:
     _frontend:
@@ -1411,3 +1432,51 @@ en:
         attribute_in_use: Unable to delete an attribute that is currently in use by an assessment
       database_value: Database Value
       translation: Translation
+
+  custom_report_template:
+    _frontend:
+      new_title: New Custom Report Template
+      section:
+        template_information: Template Information
+        basic_information_fields: Basic Information Fields
+        linked_records: Linked Records
+        sort_by: Sort Report By
+      action:
+        create: Create Template
+        save: Save Template
+      messages:
+        created: Custom Report Template created
+        updated: Custom Report Template updated
+
+  oai_config:
+    title: OAI-PMH Settings
+    title_repo_section: Per Repository OAI-PMH Settings
+    general_section: General Settings
+    repo_set_section: Repository Set
+    sponsor_set_section: Sponsor Set
+    repo_set_desc: In addition to sets based on level of description, you can define an OAI Set based on repositories.
+    sponsor_set_desc: In addition to sets based on level of description, you can define an OAI Set based on sponsor names.
+    oai_record_prefix: OAI Record Prefix
+    oai_record_prefix: OAI Record Prefix
+    oai_admin_email: OAI Admin Email
+    oai_repository_name: OAI Repository Name
+    repo_set_name: Repository Set Name
+    repo_set_codes: Repositories in Set
+    repo_set_description: Repository Set Description
+    sponsor_set_name: Sponsor Set Name
+    sponsor_set_names: Sponsor Names
+    sponsor_set_description: Sponsor Set Description
+    oai_leave_repo_form: These options affect OAI-PMH for this repository only. Click below to view/edit global OAI options. This will leave current form without saving changes.
+    _frontend:
+      section:
+        basic_information: General Settings
+      action:
+        create: Update OAI-PMH Settings
+        updated: OAI-PMH settings successfully updated!
+    _sidebar:
+      repo_set_section:
+        _plural: Repository Set
+      sponsor_set_section:
+        _plural: Sponsor Set
+      repo_settings:
+        _plural: Per Repository OAI-PMH Settings

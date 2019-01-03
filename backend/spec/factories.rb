@@ -89,9 +89,9 @@ FactoryBot.define do
 
       username { generate(:username) }
       name { generate(:generic_name) }
-      agent_record_type :agent_person
+      agent_record_type { :agent_person }
       agent_record_id {JSONModel(:agent_person).id_for(create(:json_agent_person).uri)}
-      source 'local'
+      source { 'local' }
     end
 
     factory :accession do
@@ -121,8 +121,8 @@ FactoryBot.define do
       portion { generate(:portion) }
       number { generate(:number) }
       extent_type { generate(:extent_type) }
-      resource_id nil
-      archival_object_id nil
+      resource_id { nil }
+      archival_object_id { nil }
       dimensions { generate(:alphanumstr) }
       physical_details { generate(:alphanumstr) }
     end
@@ -130,11 +130,11 @@ FactoryBot.define do
     factory :archival_object do
       json_schema_version { 1 }
       title { generate(:generic_title) }
-      repo_id nil
+      repo_id { nil }
       ref_id { generate(:alphanumstr) }
       level { generate(:archival_record_level) }
-      root_record_id nil
-      parent_id nil
+      root_record_id { nil }
+      parent_id { nil }
     end
   end
   # JSON Models:
@@ -174,26 +174,26 @@ FactoryBot.define do
   end
 
   factory :json_agent_corporate_entity, class: JSONModel(:agent_corporate_entity) do
-    agent_type 'agent_corporate_entity'
+    agent_type { 'agent_corporate_entity' }
     names { [build(:json_name_corporate_entity)] }
     agent_contacts { [build(:json_agent_contact)] }
     dates_of_existence { [build(:json_date, :label => 'existence')] }
   end
 
   factory :json_agent_family, class: JSONModel(:agent_family) do
-    agent_type 'agent_family'
+    agent_type { 'agent_family' }
     names { [build(:json_name_family)] }
     dates_of_existence { [build(:json_date, :label => 'existence')] }
   end
 
   factory :json_agent_person, class: JSONModel(:agent_person) do
-    agent_type 'agent_person'
+    agent_type { 'agent_person' }
     names { [build(:json_name_person)] }
     dates_of_existence { [build(:json_date, :label => 'existence')] }
   end
 
   factory :json_agent_software, class: JSONModel(:agent_software) do
-    agent_type 'agent_software'
+    agent_type { 'agent_software' }
     names { [build(:json_name_software)] }
     dates_of_existence { [build(:json_date, :label => 'existence')] }
   end
@@ -281,7 +281,7 @@ FactoryBot.define do
 
   factory :json_note_citation, class: JSONModel(:note_citation) do
     content { (0..rand(3)).map { generate(:good_markup) } }
-    xlink Hash[%w(actuate arcrole href role show title type).map{|i| [i, i]}]
+    xlink { Hash[%w(actuate arcrole href role show title type).map{|i| [i, i]}] }
   end
 
   factory :json_note_chronology, class: JSONModel(:note_chronology) do
@@ -335,23 +335,23 @@ FactoryBot.define do
 
   factory :json_date, class: JSONModel(:date) do
     date_type { generate(:date_type) }
-    label 'creation'
+    label { 'creation' }
     self.begin { generate(:yyyy_mm_dd) }
     self.end { self.begin }
-    self.certainty 'inferred'
-    self.era 'ce'
-    self.calendar 'gregorian'
+    self.certainty { 'inferred' }
+    self.era { 'ce' }
+    self.calendar { 'gregorian' }
     expression { generate(:alphanumstr) }
   end
 
 
   factory :json_date_single, class: JSONModel(:date) do
-    date_type 'single'
-    label 'creation'
+    date_type { 'single' }
+    label { 'creation' }
     self.begin { generate(:yyyy_mm_dd) }
-    self.certainty 'inferred'
-    self.era 'ce'
-    self.calendar 'gregorian'
+    self.certainty { 'inferred' }
+    self.era { 'ce' }
+    self.calendar { 'gregorian' }
     expression { generate(:alphanumstr) }
   end
 
@@ -368,6 +368,15 @@ FactoryBot.define do
     digital_object_id { generate(:alphanumstr) }
     extents { [build(:json_extent)] }
     file_versions { few_or_none(:json_file_version) }
+    dates { few_or_none(:json_date) }
+  end
+
+  factory :json_digital_object_unpub_files, class: JSONModel(:digital_object) do
+    title { "Digital Object #{generate(:generic_title)}" }
+    language { generate(:archival_object_language) }
+    digital_object_id { generate(:alphanumstr) }
+    extents { [build(:json_extent)] }
+    file_versions { few_or_none(:json_file_version_unpub) }
     dates { few_or_none(:json_date) }
   end
 
@@ -434,6 +443,20 @@ FactoryBot.define do
     file_size_bytes { generate(:number).to_i }
     checksum { generate(:alphanumstr) }
     checksum_method { generate(:checksum_method) }
+    publish { true }
+  end
+
+  factory :json_file_version_unpub, class: JSONModel(:file_version) do
+    file_uri { generate(:alphanumstr) }
+    use_statement { generate(:use_statement) }
+    xlink_actuate_attribute { generate(:xlink_actuate_attribute) }
+    xlink_show_attribute { generate(:xlink_show_attribute) }
+    file_format_name { generate(:file_format_name) }
+    file_format_version { generate(:alphanumstr) }
+    file_size_bytes { generate(:number).to_i }
+    checksum { generate(:alphanumstr) }
+    checksum_method { generate(:checksum_method) }
+    publish { false }
   end
 
   factory :json_external_document, class: JSONModel(:external_document) do
@@ -452,7 +475,7 @@ FactoryBot.define do
   end
 
   factory :json_instance_digital, class: JSONModel(:instance) do
-    instance_type 'digital_object'
+    instance_type { 'digital_object' }
     digital_object { {'ref' => create(:json_digital_object).uri } }
   end
 
@@ -473,7 +496,7 @@ FactoryBot.define do
     subordinate_name_2 { generate(:alphanumstr) }
     number { generate(:alphanumstr) }
     sort_name { generate(:sort_name) }
-    sort_name_auto_generate true
+    sort_name_auto_generate { true }
     dates { generate(:alphanumstr) }
     qualifier { generate(:alphanumstr) }
     authority_id { generate(:url) }
@@ -484,7 +507,7 @@ FactoryBot.define do
     rules { generate(:name_rule) }
     family_name { generate(:generic_name) }
     sort_name { generate(:sort_name) }
-    sort_name_auto_generate true
+    sort_name_auto_generate { true }
     dates { generate(:alphanumstr) }
     qualifier { generate(:alphanumstr) }
     prefix { generate(:alphanumstr) }
@@ -499,7 +522,7 @@ FactoryBot.define do
     sort_name { generate(:sort_name) }
     name_order { %w(direct inverted).sample }
     number { generate(:alphanumstr) }
-    sort_name_auto_generate true
+    sort_name_auto_generate { true }
     dates { generate(:alphanumstr) }
     qualifier { generate(:alphanumstr) }
     fuller_form { generate(:alphanumstr) }
@@ -514,7 +537,7 @@ FactoryBot.define do
     rules { generate(:name_rule) }
     software_name { generate(:generic_name) }
     sort_name { generate(:sort_name) }
-    sort_name_auto_generate true
+    sort_name_auto_generate { true }
   end
 
   factory :json_collection_management, class: JSONModel(:collection_management) do
@@ -614,9 +637,27 @@ FactoryBot.define do
     agent_representation { build(:json_agent_corporate_entity) }
   end
 
+  factory :json_repo_no_org_code, class: JSONModel(:repository) do
+    repo_code { generate(:repo_code) }
+    name { generate(:generic_description) }
+    image_url { generate(:url) }
+    url { generate(:url) }
+    country { 'US' }
+  end
+
+  factory :json_repo_parent_org, class: JSONModel(:repository) do
+    repo_code { generate(:repo_code) }
+    name { generate(:generic_description) }
+    org_code { generate(:alphanumstr) }
+    image_url { generate(:url) }
+    parent_institution_name { generate(:alphanumstr) }
+    url { generate(:url) }
+    country { 'US' }
+  end
+
   # may need factories for each rights type
   factory :json_rights_statement, class: JSONModel(:rights_statement) do
-    rights_type 'copyright'
+    rights_type { 'copyright' }
     status { generate(:status) }
     jurisdiction { generate(:jurisdiction) }
     start_date { generate(:yyyy_mm_dd) }
@@ -672,11 +713,11 @@ FactoryBot.define do
   end
 
   factory :json_find_and_replace_job, class: JSONModel(:find_and_replace_job) do
-    find "/foo/"
-    replace "bar"
-    record_type "extent"
-    property "container_summary"
-    base_record_uri "repositories/2/resources/1"
+    find { "/foo/" }
+    replace { "bar" }
+    record_type { "extent" }
+    property { "container_summary" }
+    base_record_uri { "repositories/2/resources/1" }
   end
 
   factory :json_accession_job, class: JSONModel(:job) do
@@ -684,8 +725,8 @@ FactoryBot.define do
   end
 
   factory :json_acc_job, class: JSONModel(:report_job) do
-    report_type 'AccessionReport'
-    format 'json'
+    report_type { 'AccessionReport' }
+    format { 'json' }
   end
 
   factory :json_deaccession_job, class: JSONModel(:job) do
@@ -693,8 +734,8 @@ FactoryBot.define do
   end
 
   factory :json_deacc_job, class: JSONModel(:report_job) do
-    report_type 'AccessionDeaccessionsListReport'
-    format 'json'
+    report_type { 'AccessionDeaccessionsListReport' }
+    format { 'json' }
   end
 
   factory :json_agent_job, class: JSONModel(:job) do
@@ -702,8 +743,8 @@ FactoryBot.define do
   end
 
   factory :json_agt_job, class: JSONModel(:report_job) do
-    report_type 'AgentListReport'
-    format 'json'
+    report_type { 'AgentListReport' }
+    format { 'json' }
   end
 
   factory :json_dig_obj_file_job, class: JSONModel(:job) do
@@ -711,8 +752,8 @@ FactoryBot.define do
   end
 
   factory :json_do_file_job, class: JSONModel(:report_job) do
-    report_type 'DigitalObjectFileVersionsReport'
-    format 'json'
+    report_type { 'DigitalObjectFileVersionsReport' }
+    format { 'json' }
   end
 
   factory :json_location_job, class: JSONModel(:job) do
@@ -720,8 +761,8 @@ FactoryBot.define do
   end
 
   factory :json_loc_job, class: JSONModel(:report_job) do
-    report_type 'LocationReport'
-    format 'json'
+    report_type { 'LocationReport' }
+    format { 'json' }
   end
 
   factory :json_resource_deacc_job, class: JSONModel(:job) do
@@ -729,8 +770,8 @@ FactoryBot.define do
   end
 
   factory :json_res_deacc_job, class: JSONModel(:report_job) do
-    report_type 'ResourceDeaccessionsListReport'
-    format 'json'
+    report_type { 'ResourceDeaccessionsListReport' }
+    format { 'json' }
   end
 
   factory :json_resource_restrict_job, class: JSONModel(:job) do
@@ -738,8 +779,8 @@ FactoryBot.define do
   end
 
   factory :json_res_res_job, class: JSONModel(:report_job) do
-    report_type 'ResourceRestrictionsListReport'
-    format 'json'
+    report_type { 'ResourceRestrictionsListReport' }
+    format { 'json' }
   end
 
   factory :json_unproc_accession_job, class: JSONModel(:job) do
@@ -747,8 +788,8 @@ FactoryBot.define do
   end
 
   factory :json_unp_acc_job, class: JSONModel(:report_job) do
-    report_type 'UnprocessedAccessionsReport'
-    format 'json'
+    report_type { 'UnprocessedAccessionsReport' }
+    format { 'json' }
   end
 
   factory :json_subject_list_job, class: JSONModel(:job) do
@@ -756,8 +797,8 @@ FactoryBot.define do
   end
 
   factory :json_sub_list_job, class: JSONModel(:report_job) do
-    report_type 'SubjectListReport'
-    format 'json'
+    report_type { 'SubjectListReport' }
+    format { 'json' }
   end
 
   factory :json_preference, class: JSONModel(:preference) do
@@ -772,5 +813,11 @@ FactoryBot.define do
   factory :json_assessment, class: JSONModel(:assessment) do
     survey_begin { generate(:yyyy_mm_dd) }
     surveyed_extent { generate(:alphanumstr) }
+  end
+
+  factory :json_oai_config, class: JSONModel(:oai_config) do
+    oai_record_prefix 'archivesspace:oai'
+    oai_admin_email 'oairecord@example.org'
+    oai_repository_name 'ArchivesSpace OAI Repo'
   end
 end

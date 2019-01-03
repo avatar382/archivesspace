@@ -1,6 +1,8 @@
 # encoding: utf-8
 require 'nokogiri'
 require 'securerandom'
+require 'cgi'
+
 class EADSerializer < ASpaceExport::Serializer
   serializer_for :ead
 
@@ -38,6 +40,32 @@ class EADSerializer < ASpaceExport::Serializer
     Nokogiri::XML("<wrap>#{content}</wrap>").errors.reject { |e| e.message =~ ignore  }
   end
 
+  # ANW-716: We may have content with a mix of loose '&' chars that need to be escaped, along with pre-escaped HTML entities
+  # Example:
+  # c                 => "This is the &lt; test & for the <title>Sanford &amp; Son</title>
+  # escape_content(c) => "This is the &lt; test &amp; for the <title>Sanford &amp; Son</title>
+  # we want to leave the pre-escaped entities alone, and escape the loose & chars
+
+  def escape_content(content)
+    # first, find any pre-escaped entities and "mark" them by replacing & with @@
+    # so something like &lt; becomes @@lt;
+    # and &#1234 becomes @@#1234
+
+    content.gsub!(/&\w+;/) {|t| t.gsub('&', '@@')}
+    content.gsub!(/&#\d{4}/) {|t| t.gsub('&', '@@')}
+    content.gsub!(/&#\d{3}/) {|t| t.gsub('&', '@@')}
+
+    # now we know that all & characters remaining are not part of some pre-escaped entity, and we can escape them safely
+    content.gsub!('&', '&amp;')
+
+    # 'unmark' our pre-escaped entities
+    content.gsub!(/@@\w+;/) {|t| t.gsub('@@', '&')}
+    content.gsub!(/@@#\d{4}/) {|t| t.gsub('@@', '&')}
+    content.gsub!(/@@#\d{3}/) {|t| t.gsub('@@', '&')}
+
+    return content
+  end
+
 
   def handle_linebreaks(content)
     # 4archon... 
@@ -47,19 +75,13 @@ class EADSerializer < ASpaceExport::Serializer
     original_content = content
     blocks = content.split("\n\n").select { |b| !b.strip.empty? }
     if blocks.length > 1
-      content = blocks.inject("") { |c,n| c << "<p>#{n.chomp}</p>"  }
+      content = blocks.inject("") do |c,n| 
+        c << "<p>#{escape_content(n.chomp)}</p>"  
+      end
     else
-      content = "<p>#{content.strip}</p>"
+      content = "<p>#{escape_content(content.strip)}</p>"
     end
 
-    # first lets see if there are any &
-    # note if there's a &somewordwithnospace , the error is EntityRef and wont
-    # be fixed here...
-    if xml_errors(content).any? { |e| e.message.include?("The entity name must immediately follow the '&' in the entity reference.") }
-      content.gsub!("& ", "&amp; ")
-    end
-
-    # in some cases adding p tags can create invalid markup with mixed content
     # just return the original content if there's still problems
     xml_errors(content).any? ? original_content : content
   end
@@ -90,7 +112,7 @@ class EADSerializer < ASpaceExport::Serializer
 
     begin
       if ASpaceExport::Utils.has_html?(content)
-        context.text( fragments << content )
+        context.text (fragments << content )
       else
         context.text content.gsub("&amp;", "&") #thanks, Nokogiri
       end
@@ -178,7 +200,7 @@ class EADSerializer < ASpaceExport::Serializer
           }# </did>
 
           data.digital_objects.each do |dob|
-                serialize_digital_object(dob, xml, @fragments)
+            serialize_digital_object(dob, xml, @fragments)
           end
 
           serialize_nondid_notes(data, xml, @fragments)
@@ -463,12 +485,23 @@ class EADSerializer < ASpaceExport::Serializer
     end
   end
 
+  # set daoloc audience attr == 'internal' if this is an unpublished && include_unpublished is set
+  def get_audience_flag_for_file_version(file_version)
+    if file_version['file_uri'] && 
+       (file_version['publish'] == false && @include_unpublished)
+      return "internal"
+    else
+      return "external"
+    end
+  end
 
   def serialize_digital_object(digital_object, xml, fragments)
     return if digital_object["publish"] === false && !@include_unpublished
     return if digital_object["suppressed"] === true
 
-    file_versions = digital_object['file_versions']
+    # ANW-285: Only serialize file versions that are published, unless include_unpublished flag is set 
+    file_versions_to_display = digital_object['file_versions'].select {|fv| fv['publish'] == true || @include_unpublished }
+
     title = digital_object['title']
     date = digital_object['dates'][0] || {}
 
@@ -488,7 +521,7 @@ class EADSerializer < ASpaceExport::Serializer
     atts['xlink:title'] = digital_object['title'] if digital_object['title']
 
 
-    if file_versions.empty?
+    if file_versions_to_display.empty?
       atts['xlink:type'] = 'simple'
       atts['xlink:href'] = digital_object['digital_object_id']
       atts['xlink:actuate'] = 'onRequest'
@@ -496,23 +529,27 @@ class EADSerializer < ASpaceExport::Serializer
       xml.dao(atts) {
         xml.daodesc{ sanitize_mixed_content(content, xml, fragments, true) } if content
       }
-    elsif file_versions.length == 1
-        atts['xlink:type'] = 'simple'
-        atts['xlink:href'] = file_versions.first['file_uri'] || digital_object['digital_object_id']
-        atts['xlink:actuate'] = file_versions.first['xlink_actuate_attribute'] || 'onRequest'
-        atts['xlink:show'] = file_versions.first['xlink_show_attribute'] || 'new'
-        atts['xlink:role'] = file_versions.first['use_statement'] if file_versions.first['use_statement']
-        xml.dao(atts) {
-          xml.daodesc{ sanitize_mixed_content(content, xml, fragments, true) } if content
-        }
+    elsif file_versions_to_display.length == 1
+      file_version = file_versions_to_display.first
+
+      atts['xlink:type'] = 'simple'
+      atts['xlink:actuate'] = file_version['xlink_actuate_attribute'] || 'onRequest'
+      atts['xlink:show'] = file_version['xlink_show_attribute'] || 'new'
+      atts['xlink:role'] = file_version['use_statement'] if file_version['use_statement']
+      atts['xlink:href'] = file_version['file_uri'] 
+      atts['xlink:audience'] = get_audience_flag_for_file_version(file_version)
+      xml.dao(atts) {
+        xml.daodesc{ sanitize_mixed_content(content, xml, fragments, true) } if content
+      }
     else
       xml.daogrp( atts.merge( { 'xlink:type' => 'extended'} ) ) {
         xml.daodesc{ sanitize_mixed_content(content, xml, fragments, true) } if content
-        file_versions.each do |file_version|
+        file_versions_to_display.each do |file_version|
           atts['xlink:type'] = 'locator'
-          atts['xlink:href'] = file_version['file_uri'] || digital_object['digital_object_id']
+          atts['xlink:href'] = file_version['file_uri'] 
           atts['xlink:role'] = file_version['use_statement'] if file_version['use_statement']
           atts['xlink:title'] = file_version['caption'] if file_version['caption']
+          atts['xlink:audience'] = get_audience_flag_for_file_version(file_version)
           xml.daoloc(atts)
         end
       }

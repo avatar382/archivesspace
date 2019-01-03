@@ -29,9 +29,13 @@ fr:
     more: Plus
     link_to: Lier à
     add_prefix: Ajouter
+    merge_replace: Remplacer
+    merge_add: Ajouter
     merge_confirm_title: Fusionner avec cette notice?
+    merge_from_browse_confirm_title: Fusionner les enregistrements sélectionnés?
     merge_subject_confirm_message: "Les notices sélectionnées seront fusionnées dans le sujet '%{source}'. Toutes les notices sélectionnées seront détruites et toute notice liée sera re-liée à ce sujet."
     merge_agent_confirm_message: "Les notices sélectionnées seront fusionnées dans l'agent '%{source}'. Toutes les notices sélectionnées seront détruites et toute notice liée sera re-liée à cet agent."
+    merge_agent_from_browse_confirm_message: "Les premiers éléments sélectionnés seront fusionnés avec le premier agent sélectionné. Tous les enregistrements sélectionnés ultérieurement seront supprimés et tous les enregistrements liés seront liés au premier agent sélectionné."
     merge_resource_confirm_message: "Les notices sélectionnées seront fusionnées dans la ressource '%{source}'. Toutes les notices sélectionnées seront détruites et toute notice liée sera réaffectée à cette ressource."
     move: Déplacer
     move_up_a_level: Un niveau plus haut
@@ -131,7 +135,7 @@ fr:
 
   search_results:
     title: Résultats de la recherche
-    context: Contexte du résultat
+    context: Trouvé dans
     no_results: Aucune notice trouvée
     no_results_prefix: Pas de résultat pour
     result_type: Type de notice
@@ -424,6 +428,8 @@ fr:
     error_404_message: "La notice à laquelle vous avez tenté d'accéder n'existe plus, ou alors vous n'avez pas la permission de la voir."
     error_tree_pane_ajax: Une erreur s'est produite en chargeant ce formulaire.
     merge_conflict: "La fusion des agents n'a pas réussi: %{message}"
+    merge_too_many_victims: Un seul agent peut être sélectionné pour une fusion détaillée.
+    merge_different_types: Les agents sélectionnés pour la fusion détaillée doivent être du même type.
     linked_to_assessment: Notice impossible à supprimer, car liée à une évaluation
 
   accession:
@@ -452,7 +458,7 @@ fr:
         updated: Agent sauvegardé
         deleted: Agent supprimé
         delete_conflict: "Impossible de supprimer l'agent: <pre>%{error}</pre>"
-        merge_description: Sélectionner ci-dessous les agents à fusionner
+        merge_description: Sélectionnez l'agent à fusionner
         merged: Agent(s) fusionné(s)
         please_select_a_agent_to_merge: Sélectionner un agent
       section:
@@ -462,8 +468,11 @@ fr:
         contacts: Détails de contact
         search_embedded: Notices liées
         linked_via_rights_statement: Notices liées via la mention de droits
+        target_record: Cet enregistrement sera mis à jour
+        victim_record: Cet enregistrement sera supprimé
       action:
         create: Créer agent
+        preview: Fusionner l'aperçu
 
   agent_contact:
     _frontend:
@@ -1411,3 +1420,18 @@ fr:
         attribute_in_use: Impossible de supprimer un attribut qui sert à une évaluation
       database_value: Valeur de la base de données
       translation: Traduction
+
+  custom_report_template:
+    _frontend:
+      new_title: Nouveau modèle de rapport personnalisé
+      section:
+        template_information: Informations sur le modèle
+        basic_information_fields: Informations de base
+        linked_records: Notices liées
+        sort_by: Trier le rapport par
+      action:
+        create: Créer un modèle
+        save: Enregistrer le modèle
+      messages:
+        created: Modèle de rapport personnalisé créé
+        updated: Modèle de rapport personnalisé mis à jour

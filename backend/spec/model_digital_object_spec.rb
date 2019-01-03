@@ -7,7 +7,7 @@ describe 'Digital object model' do
 
     digital_object = DigitalObject.create_from_json(json, :repo_id => $repo_id)
 
-    DigitalObject[digital_object[:id]].title.should eq(json.title)
+    expect(DigitalObject[digital_object[:id]].title).to eq(json.title)
   end
 
 
@@ -16,7 +16,7 @@ describe 'Digital object model' do
 
     json2 = build(:json_digital_object, :digital_object_id => '123')
 
-    expect { DigitalObject.create_from_json(json1, :repo_id => $repo_id) }.to_not raise_error
+    expect { DigitalObject.create_from_json(json1, :repo_id => $repo_id) }.not_to raise_error
     expect { DigitalObject.create_from_json(json2, :repo_id => $repo_id) }.to raise_error(Sequel::ValidationFailed)
   end
 
@@ -28,7 +28,7 @@ describe 'Digital object model' do
                                       :digital_object => {'ref' => digital_object.uri})])
 
     digital_object = JSONModel(:digital_object).find(digital_object.id)
-    digital_object.linked_instances.count.should eq(1)
+    expect(digital_object.linked_instances.count).to eq(1)
   end
 
 
@@ -82,7 +82,7 @@ describe 'Digital object model' do
     expect {
       DigitalObject.create_from_json(json)
 
-    }.to_not raise_error
+    }.not_to raise_error
 
   end
 
@@ -100,7 +100,41 @@ describe 'Digital object model' do
     obj = JSONModel(:digital_object).find(obj.id)
 
 
-    obj.file_versions.first['caption'].should eq("bar one");
+    expect(obj.file_versions.first['caption']).to eq("bar one");
+  end
+
+  it "deletes all related instances when digital object is deleted" do
+
+    # Create resource and link to digital instance
+    resource = create(:json_resource,
+                      :instances => [build(:json_instance_digital)])
+
+    # Identify digital object
+    do_id = ((resource.instances[0]['digital_object']['ref']).split('/'))[4].to_i
+    linked_digital_object = DigitalObject.where(:id => do_id).first
+
+    # Identify instance
+    instance = linked_digital_object.related_records(:instance_do_link).map {|sub| sub }.first
+
+    # Delete digital object
+    linked_digital_object = JSONModel(:digital_object).find(linked_digital_object.id)
+    linked_digital_object.delete
+
+    # Digital object should be dead
+    expect {
+      JSONModel(:digital_object).find(linked_digital_object.id)
+    }.to raise_error(RecordNotFound)
+
+    # Instance should be dead
+    expect(
+      Instance.filter(:id => instance.id).all
+    ).to be_empty
+
+    # Confirm all is still well with the resource
+    resource = JSONModel(:resource).find(resource.id)
+    expect(resource).not_to be_nil
+    expect(resource.instances.count).to be(0)
+
   end
 
 end

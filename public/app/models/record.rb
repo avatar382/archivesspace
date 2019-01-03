@@ -196,7 +196,7 @@ class Record
       rr = raw['_resolved_repository'].first
 
       if !rr[1][0]['json'].blank?
-        return JSON.parse( rr[1][0]['json'])
+        return ASUtils.json_parse( rr[1][0]['json'])
       end
     elsif @json['repository'] && @json['repository']['_resolved']
       @json['repository']['_resolved']
@@ -218,7 +218,7 @@ class Record
 #Pry::ColorPrinter.pp result['_resolved_top_container_uri_u_sstr']
       rr = raw['_resolved_top_container_uri_u_sstr'].first
       if !rr[1][0]['json'].blank?
-        return JSON.parse( rr[1][0]['json'])
+        return ASUtils.json_parse( rr[1][0]['json'])
       end
     end
   end
@@ -401,7 +401,7 @@ class Record
     ASUtils.wrap(json['instances']).each do |instance|
       if instance['digital_object'] && instance['digital_object']['ref']
         digital_object = digital_object_for_uri(instance['digital_object']['ref'])
-        next if digital_object.nil?
+        next if digital_object.nil? || digital_object['publish'] == false
 
         results[instance['digital_object']['ref']] = record_from_resolved_json(digital_object)
       end

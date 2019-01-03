@@ -288,6 +288,7 @@
       ingest: Sin especificar
       lcshac: Biblioteca del encabezamientos Congreso infantil
       local: Fuentes locales
+      lcnaf: Library of Congress Name Authority File
       naf: Archivo de autoridad de NACO
       nad: NAD / ARK II Name Authority Database
       nal: Encabezamientos biblioteca agrícola nacionales
@@ -573,6 +574,7 @@
       chv: Chuvasio
       chy: Cheyenne
       cmc: Chamic languages
+      cnr: Montenegrino
       cop: Copto
       cor: Cornish
       cos: Corso
@@ -835,7 +837,6 @@
       pra: Lenguas Prakrit
       pro: "Provenzal, antiguo (hasta 1500)"
       pus: Pushto; Pashto
-      qaa-qtz: "Reservado para uso local"
       que: Quechua
       raj: Rajasthani
       rap: Rapanui
@@ -963,6 +964,7 @@
       zap: Zapoteca
       zbl: Blissymbols; Blissymbolics; Bliss
       zen: Zenaga
+      zgh: Tamazight Marroquí Estándar
       zha: Zhuang; Chuang
       znd: Zande languages
       zul: Zulú

@@ -29,10 +29,10 @@ build/shared
 backend/tests/ladle-server*
 webdriver-profile*
 common/ARCHIVESSPACE_VERSION
+common/asconstants.rb
 .yardoc
 API.md
 endpoint_examples*
-config/gemnasium.yml
 build/demo_db_backups
 *.jasper
 .bundle
@@ -47,4 +47,4 @@ backend/default
 frontend/default
 indexer/default
 public/default
-
+tech_docs
