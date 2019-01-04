@@ -10,7 +10,7 @@ describe 'OAI handler' do
 
   before(:all) do
     # force wipe and reconnect to resolve data dependency issues
-    # DB.get_default_pool.connect(true)
+    DB.get_default_pool.connect(true)
     AppConfig[:oai_proxy_url]  = 'http://your-public-oai-url.example.com'
 
     @oai_repo_id, @test_record_count, @test_resource_record, @test_archival_object_record = OAIHelper.load_oai_data
