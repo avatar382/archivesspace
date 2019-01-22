@@ -16,9 +16,13 @@ $alert-warning-text: red;
 @import "archivesspace/aspace"; 
 @import "archivesspace/record-type-badge";
 
+/* CUSTOM FONT */
+body {
+    font-family: "Verdana";
+    src: url("Verdana.woff") format('woff');
+}
 
 #header {
-  background-color: #000;
   > .row {
     height: auto;
     > div {
