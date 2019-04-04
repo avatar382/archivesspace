@@ -31,7 +31,7 @@ body {
   }
   .logo {
     float: none;
-    height: 150px;
+    height: 100px;
     padding-left: 40px;
     padding-bottom: 10px;
     padding-top: 10px;
@@ -46,6 +46,8 @@ ul.address {
 .navbar-header.top-bar {
   /* if customer wants a linear gradient in navbar */
   // background: linear-gradient(to bottom, #ca9661, #F2F2F2) !important;
+  border-color: #EFBA08 !important;
+  border-bottom: none !important;
 }
 
 /* override default twitter-bootstrap colors */
