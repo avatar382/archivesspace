@@ -1,7 +1,17 @@
+  <script src="/assets/jquery.slides.min.js"></script>
+  <script>
+    $(function(){
+      $("#slides").slidesjs({
+        width: 300,
+        height: 400
+      });
+    });
+  </script>
+
 <div class="row">
-  <div class="col-sm-12">
+  <div class="col-sm-8">
     <h1><%= t('brand.welcome_head') %></h1>
-      <div> <%= t('brand.welcome_message').html_safe %> </div>
+    <div> <%= t('brand.welcome_message').html_safe %> </div>
     <%= render partial: 'shared/search', locals: {:search_url => "/search",
      :title => t('archive._plural'),
      :limit_options => [["#{t('actions.search')} #{t('search-limits.all')}",''], 
@@ -11,15 +21,42 @@
             ["#{t('search_results.filter.title')}",'title'],
             ["#{t('search_results.filter.creators')}",'creators_text'],
            ["#{t('search_results.filter.notes')}", 'notes'] ] } %>
+
+
+      <h3>Search Tips:</h3>
+      <p>The Intrepid Museum’s archive uses a keyword search bar that will search for exactly what you type.  You can use a few approaches:</p>
+      <div class="row">
+        <div class="col-sm-6">
+          <ul>
+            <li><strong>Boolean Search</strong> (e.g., World War II and “VT-10” to get everything related to VT-10 in World War II)</li>
+            <li><strong>Truncated Search</strong> (e.g., sun* to get sun/sunshine/sundae)</li>
+            <li><strong>Phrase Search</strong> (e.g., “Battle of Leyte Gulf”)</li>
+          </ul>
+        </div>
+        <div class="col-sm-6">
+          <h4>Some common search terms</h4>
+          <ul>
+            <li>“World War II” rather than WWII</li>
+            <li>“Vietnam War” rather than Vietnam</li>
+          </ul>
+        </div>
+      </div>
+      <p>Only want to see primary documents?  <a href="http://intrepidmuseum.libraryhost.com/search?type=digital_object">Find all of the digital objects related to our collections.</a></p>
+      <div class="row">
+        <div class="col-sm-6">
+          <a href="http://intrepidmuseum.libraryhost.com/search?filter_term%5B%5D=%7B%22classification_uris%22%3A%22%2Frepositories%2F2%2Fclassifications%2F2%22%7D&page=1&term_map=%7B%22%2Frepositories%2F2%2Fclassifications%2F2%22%3A%22Archival+Collection%22%7D">Click here</a> to see all of our finding aids</a>
+        </div>
+        <div class="col-sm-6">
+          <a href="http://intrepidmuseum.libraryhost.com/search?filter_term%5B%5D=%7B%22classification_uris%22%3A%22%2Frepositories%2F2%2Fclassifications%2F1%22%7D&page=1&term_map=%7B%22%2Frepositories%2F2%2Fclassifications%2F1%22%3A%22Oral+History+Collection%22%7D">Click here</a> to find all of our oral histories</a>
+        </div>
+      </div>
+      <br>
+      <p>Please contact <a href="mailto:collections@intrepidmuseum.org">collections@intrepidmuseum.org</a> for more information on our collection and research policies.</p>
+
   </div>
-  <div class="col-sm-12">
-    <h2>Welcome to the Donald R. and Beverly J. Gerth Archives and Special Collections at CSUDH</h2>
-    <p>The Gerth Archives and Special Collections contains manuscripts, photographs, publications, personal papers, rare books, ephemera, and other primary source material including institutional histories relating to CSUDH and the CSU System. The collection also contains material on South Bay Los Angeles history and African Americans; Japanese Americans; tradeswomen; and Dominguez Family history.</p>
-    <p>Finding aids are guides to archival collections that contain detailed descriptions of a collection’s contents; dates; biographical or historical notes about the creator; subject coverage; and collection inventory. You may search or browse for finding aids and archival material located in our repositories using the search function on this page.</p>
-    <p>Please note that creation of new and updated finding aids and records is ongoing. If you are looking for something and do not see it here, check the <a href='http://www.oac.cdlib.org/institutions/California+State+University,+Dominguez+Hills'>Online Archive of California</a> (OAC). If you have any questions, please contact us at: <a href='mailto:archives@csudh.edu'>archives@csudh.edu</a> or <a href="tel:3102433895">(310) 243-3895.</a></p>
-    <p>For more detailed descriptions on how to use and search for archival material please consult our guides on <a href="https://libguides.csudh.edu/c.php?g=731504&p=5225558">Primary Source Discovery and Research</a>, and using a <a href='https://libguides.csudh.edu/c.php?g=731504&p=6332204'>Finding Aid.</a></p>
-    <p>For information on accessing the Gerth Archives collections, please visit our <a href='https://www.csudh.edu/libarchives/'>webpage.</a></p>
-    <p>For access to our digital collections, please consult our <a href='http://digitalcollections.archives.csudh.edu/digital/'>digital collection database.</a></p>
+
+  <div class="col-sm-4">
+      <%= File.read(File.join(File.dirname(__FILE__), "slides.html")).html_safe %>
   </div>
 </div>
 

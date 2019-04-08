@@ -1,9 +1,10 @@
 # (cvk) find the parts you need in public/config/locales/en.yml
 # and copy here
+
 en:
   brand:
-    title: Welcome to the California State University Dominguez Hills
-    welcome_page_title: California State University Dominguez Hills
-    welcome_head: ""
-    welcome_message: ""
-    welcome_search_label: ""
+    title: "Intrepid Sea, Air & Space Museum Archives"
+    home: Home
+    welcome_page_title: "Intrepid Sea, Air & Space Museum Archives"
+    welcome_message: "Intrepid Sea, Air & Space Museum Archives"
+    welcome_search_label: "Find what you're looking for:"

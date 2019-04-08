@@ -18,8 +18,8 @@ $alert-warning-text: red;
 
 /* CUSTOM FONT */
 body {
-    font-family: "Verdana";
-    src: url("Verdana.woff") format('woff');
+    font-family: 'Interstate';
+    src: url('fonts/Interstate-Regular.eot');
 }
 
 #header {
@@ -46,7 +46,6 @@ ul.address {
 .navbar-header.top-bar {
   /* if customer wants a linear gradient in navbar */
   // background: linear-gradient(to bottom, #ca9661, #F2F2F2) !important;
-  border-color: #EFBA08 !important;
   border-bottom: none !important;
 }
 
@@ -67,4 +66,275 @@ a:hover, a:focus {
 /* site footer with AS version, "Hosted by LibraryHost", etc. */
 div.panel-footer {
   text-align: right;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/Interstate-Regular.eot');
+  src: url('fonts/Interstate-Regular.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-Regular.woff') format('woff'),
+    url('fonts/Interstate-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/Interstate-Black.eot');
+  src: url('fonts/Interstate-Black.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-Black.woff') format('woff'),
+    url('fonts/Interstate-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/Interstate-Thin.eot');
+  src: url('fonts/Interstate-Thin.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-Thin.woff') format('woff'),
+    url('fonts/Interstate-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/Interstate-BoldCompressed.eot');
+  src: url('fonts/Interstate-BoldCompressed.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-BoldCompressed.woff') format('woff'),
+    url('fonts/Interstate-BoldCompressed.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/Interstate-BoldCondensed.eot');
+  src: url('fonts/Interstate-BoldCondensed.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-BoldCondensed.woff') format('woff'),
+    url('fonts/Interstate-BoldCondensed.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/Interstate-RegularCondensed.eot');
+  src: url('fonts/Interstate-RegularCondensed.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-RegularCondensed.woff') format('woff'),
+    url('fonts/Interstate-RegularCondensed.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/Interstate-UltraBlack.eot');
+  src: url('fonts/Interstate-UltraBlack.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-UltraBlack.woff') format('woff'),
+    url('fonts/Interstate-UltraBlack.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/Interstate-LightItalic.eot');
+  src: url('fonts/Interstate-LightItalic.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-LightItalic.woff') format('woff'),
+    url('fonts/Interstate-LightItalic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/Interstate-LightCompressed.eot');
+  src: url('fonts/Interstate-LightCompressed.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-LightCompressed.woff') format('woff'),
+    url('fonts/Interstate-LightCompressed.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'InterstatePlus';
+  src: url('fonts/InterstatePlus-LightCond.eot');
+  src: url('fonts/InterstatePlus-LightCond.eot?#iefix') format('embedded-opentype'),
+    url('fonts/InterstatePlus-LightCond.woff') format('woff'),
+    url('fonts/InterstatePlus-LightCond.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/fonts/Interstate-LightCondensed.eot');
+  src: url('fonts/Interstate-LightCondensed.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-LightCondensed.woff') format('woff'),
+    url('fonts/Interstate-LightCondensed.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/Interstate-ExtraLightItalic.eot');
+  src: url('fonts/Interstate-ExtraLightItalic.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-ExtraLightItalic.woff') format('woff'),
+    url('fonts/Interstate-ExtraLightItalic.ttf') format('truetype');
+  font-weight: 200;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/Interstate-RegularCompressed.eot');
+  src: url('fonts/Interstate-RegularCompressed.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-RegularCompressed.woff') format('woff'),
+    url('fonts/Interstate-RegularCompressed.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/Interstate-RegularItalic.eot');
+  src: url('fonts/Interstate-RegularItalic.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-RegularItalic.woff') format('woff'),
+    url('fonts/Interstate-RegularItalic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Interstate';
+  src: url('fonts/Interstate-ExtraLight.eot');
+  src: url('fonts/Interstate-ExtraLight.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Interstate-ExtraLight.woff') format('woff'),
+    url('fonts/Interstate-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+}
+body {
+  background: #fff;
+  color: #444;
+}
+
+/* some intrepid colors from the style guide
+ * blue: #125687
+ * maroon: #900000
+ */
+
+
+/* if customer has special font */
+body {
+}
+input, button, select, textarea, .navbar-search .search-query { /* override bootstrap */
+}
+
+body {
+  border-top: 14px solid #0a1e37;
+}
+body > header {
+  border-top: 3px solid #99afc7;
+  padding-top: 1px;
+}
+
+a {
+  color: #a81a24;
+}
+a:visited {
+  color: #900000;
+}
+a:hover {
+  color: #e43839;
+}
+a:active {
+  color: #e43839;
+}
+
+h1, h2, h3, h4, h5, h6, ul.nav {
+  font-family: "Interstate";
+  color: #125687;
+}
+
+body > header > div.branding-container.container > div > h1 {
+  margin-bottom: 0;
+  padding: 0;
+  padding-bottom: 10px;
+}
+body > header > div.branding-container.container > div > h1 > a > img {
+  max-width: 250px; /* if resizing. try to resize without jaggies (e.g., 700px->350px, not 321.5px) */
+}
+
+/* Prevents slides from flashing */
+#slides {
+  display:none;
+}
+.slidesjs-pagination {
+  margin: 6px 0 0;
+  float: right;
+  list-style: none;
+}
+
+.slidesjs-pagination li {
+  float: left;
+  margin: 0 1px;
+}
+
+.slidesjs-pagination li a {
+  float: left;
+  visibility: hidden;
+  color: #777;
+}
+.slidesjs-pagination li a:after {
+  visibility: visible;
+  content: "•";
+}
+#slides .slidesjs-next {
+  margin-left: 5px;
+  border-left: 1px solid #ccc;
+  padding-left: 5px;
+}
+#slides .slidesjs-next:after {
+  content: ">";
+  visibility: visible;
+}
+#slides .slidesjs-previous:before {
+  content: "<";
+  visibility: visible;
+}
+.slidesjs-pagination li a.active,
+.slidesjs-pagination li a:hover.active {
+  color: #8c2233;
+}
+
+.slidesjs-pagination li a:hover {
+  color: #8c2233;
+}
+
+#icon-guide {
+  margin-bottom: 1em;
+  background-color: #f7f7f7;
+  border: 1px solid #d4d4d4;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.065);
+}
+#icon-guide div.title {
+  background-color: #eee;
+  padding: 1.25em;
+}
+#icon-guide div.title h4 {
+  text-align: center;
+  margin: 0;
+}
+#icon-guide div.icons {
+  text-align: center;
+  padding: 1em;
+}
+#icon-guide div.icons > div {
+  display: inline-block;
+  padding: 0.25em 1em;
 }
